@@ -4,7 +4,7 @@ using Compat
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, length, size, start, done, next, empty!, push!
+import Base: copy, in, getindex, findfirst, length, size, start, done, next, empty!, push!, pop!
 
 abstract AbstractIndexedArray{T} <: AbstractVector{T}
 
@@ -17,18 +17,20 @@ immutable IndexedArray{T} <: AbstractIndexedArray
     lookup::Dict{T,Int}
 
     IndexedArray() = new(T[], Dict{T,Int}())
-    function IndexedArray(items::Array{T})
+    function IndexedArray{T}(items::Array{T})
         ia = new(items, Dict{T,Int}())
         sizehint!(ia.lookup, length(ia.items))
         for (i, item) in enumerate(ia.items)
             if item in ia
-                throw(IndexedArrayError())
+                throw(IndexedArrayError("cannot construct IndexedArray with duplicate items"))
             end
             ia.lookup[item] = i
         end
         return ia
     end
 end
+
+IndexedArray{T}(items::Array{T}) = IndexedArray{T}(items)
 
 @delegate IndexedArray.items [ length, size, start, done, next ]
 
@@ -54,7 +56,7 @@ end
 
 function push!(ia::IndexedArray, item)
     if item in ia
-        throw(IndexedArrayError())
+        throw(IndexedArrayError("cannot add duplicate item to IndexedArray"))
     end
     # NOTE: does not provide any exception safety guarantee
     push!(ia.items, item)
@@ -62,8 +64,18 @@ function push!(ia::IndexedArray, item)
     return ia
 end
 
+function pop!(ia::IndexedArray)
+    if isempty(ia.items)
+        throw(ArgumentError("array must be non-empty"))
+    end
+    # NOTE: does not provide any exception safety guarantee
+    delete!(ia.lookup, ia.items[end])
+    pop!(ia.items)
+    return ia
+end
+
 copy{T}(ia::IndexedArray{T}) = IndexedArray{T}(copy(ia.items))
 
-export AbstractIndexedArray, IndexedArray, findfirst!
+export AbstractIndexedArray, IndexedArray, IndexedArrayError, findfirst!
 
 end # module
