@@ -1,5 +1,7 @@
 module IndexedArrays
 
+using Compat
+
 include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, length, size, start, done, next, empty!, push!
