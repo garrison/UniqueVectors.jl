@@ -7,6 +7,7 @@ using Base.Test
 ia = IndexedArray{ASCIIString}()
 
 @test isempty(ia)
+@test_throws ArgumentError pop!(ia)
 @test_throws KeyError findfirst(ia, "cat")
 @test findfirst!(ia, "cat") == 1
 @test !isempty(ia)
@@ -36,15 +37,15 @@ end
 ia2 = copy(ia)
 @test ia2 == ia
 
-@test is(empty!(ia), ia)
+@test empty!(ia) === ia
 @test isempty(ia)
 @test_throws KeyError findfirst(ia, "cat")
 @test findfirst!(ia, "horse") == 1
 @test_throws IndexedArrayError push!(ia, "horse")
 @test length(ia) == 1
-@test is(push!(ia, "human"), ia)
+@test push!(ia, "human") === ia
 @test findfirst(ia, "human") == 2
-@test is(pop!(ia), ia)
+@test pop!(ia) === ia
 @test length(ia) == 1
 @test ia[:] == ["horse"]
 @test_throws KeyError findfirst(ia, "human")
