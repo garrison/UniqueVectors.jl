@@ -12,7 +12,7 @@ type IndexedArrayError <: Exception # FIXME: or should we just use ArgumentError
     msg::AbstractString
 end
 
-immutable IndexedArray{T} <: AbstractIndexedArray
+immutable IndexedArray{T} <: AbstractIndexedArray{T}
     items::Array{T}
     lookup::Dict{T,Int}
 
