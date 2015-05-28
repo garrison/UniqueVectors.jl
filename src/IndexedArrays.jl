@@ -44,17 +44,17 @@ function empty!(ia::IndexedArray)
     return ia
 end
 
-in(item, ia::IndexedArray) = haskey(ia.lookup, item)
+in{T}(item::T, ia::IndexedArray{T}) = haskey(ia.lookup, item)
 
-findfirst(ia::IndexedArray, item) = ia.lookup[item] # throws KeyError if not found
+findfirst{T}(ia::IndexedArray{T}, item::T) = ia.lookup[item] # throws KeyError if not found
 
-findfirst!(ia::IndexedArray, item) = get!(ia.lookup, item) do
+findfirst!{T}(ia::IndexedArray{T}, item::T) = get!(ia.lookup, item) do
     # NOTE: does not provide any exception safety guarantee
     push!(ia.items, item)
     ia.lookup[item] = length(ia)
 end
 
-function push!(ia::IndexedArray, item)
+function push!{T}(ia::IndexedArray{T}, item::T)
     if item in ia
         throw(IndexedArrayError("cannot add duplicate item to IndexedArray"))
     end
