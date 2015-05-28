@@ -51,7 +51,7 @@ findfirst{T}(ia::IndexedArray{T}, item::T) = ia.lookup[item] # throws KeyError i
 findfirst!{T}(ia::IndexedArray{T}, item::T) = get!(ia.lookup, item) do
     # NOTE: does not provide any exception safety guarantee
     push!(ia.items, item)
-    ia.lookup[item] = length(ia)
+    return length(ia)
 end
 
 function push!{T}(ia::IndexedArray{T}, item::T)
