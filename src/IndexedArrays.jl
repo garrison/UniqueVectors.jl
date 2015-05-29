@@ -26,6 +26,7 @@ immutable IndexedArray{T} <: AbstractIndexedArray{T}
             end
             ia.lookup[item] = i
         end
+        @assert length(ia.items) == length(ia.lookup)
         return ia
     end
 end
@@ -48,10 +49,14 @@ in{T}(item::T, ia::IndexedArray{T}) = haskey(ia.lookup, item)
 
 findfirst{T}(ia::IndexedArray{T}, item::T) = ia.lookup[item] # throws KeyError if not found
 
-findfirst!{T}(ia::IndexedArray{T}, item::T) = get!(ia.lookup, item) do
-    # NOTE: does not provide any exception safety guarantee
-    push!(ia.items, item)
-    return length(ia)
+function findfirst!{T}(ia::IndexedArray{T}, item::T)
+    rv = get!(ia.lookup, item) do
+        # NOTE: does not provide any exception safety guarantee
+        push!(ia.items, item)
+        return length(ia.items)
+    end
+    @assert length(ia.items) == length(ia.lookup)
+    return rv
 end
 
 function push!{T}(ia::IndexedArray{T}, item::T)
@@ -61,6 +66,7 @@ function push!{T}(ia::IndexedArray{T}, item::T)
     # NOTE: does not provide any exception safety guarantee
     push!(ia.items, item)
     ia.lookup[item] = length(ia)
+    @assert length(ia.items) == length(ia.lookup)
     return ia
 end
 
@@ -71,6 +77,7 @@ function pop!(ia::IndexedArray)
     # NOTE: does not provide any exception safety guarantee
     delete!(ia.lookup, ia.items[end])
     pop!(ia.items)
+    @assert length(ia.items) == length(ia.lookup)
     return ia
 end
 
