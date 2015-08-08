@@ -78,9 +78,9 @@ function pop!(ia::IndexedArray)
     end
     # NOTE: does not provide any exception safety guarantee
     delete!(ia.lookup, ia.items[end])
-    pop!(ia.items)
+    rv = pop!(ia.items)
     @assert length(ia.items) == length(ia.lookup)
-    return ia
+    return rv
 end
 
 copy{T}(ia::IndexedArray{T}) = IndexedArray{T}(copy(ia.items))

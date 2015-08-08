@@ -28,11 +28,11 @@ ia = IndexedArray{ASCIIString}()
 @test length(ia) == 3
 @test endof(ia) == 3
 
-elts = Set(["cat", "dog", "mouse"])
-for elt in ia
-    pop!(elts, elt)
+ia2 = IndexedArray([1, 2, 3])
+for elt in [3,2,1]
+    @test pop!(ia2) == elt
 end
-@test isempty(elts)
+@test isempty(ia2)
 
 ia2 = copy(ia)
 @test ia2 == ia
@@ -45,7 +45,7 @@ ia2 = copy(ia)
 @test length(ia) == 1
 @test push!(ia, "human") === ia
 @test findfirst(ia, "human") == 2
-@test pop!(ia) === ia
+@test pop!(ia) == "human"
 @test length(ia) == 1
 @test ia[:] == ["horse"]
 @test_throws KeyError findfirst(ia, "human")
