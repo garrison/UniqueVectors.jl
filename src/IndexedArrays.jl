@@ -6,7 +6,7 @@ using Compat
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, length, size, start, done, next, empty!, push!, pop!
+import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!
 
 abstract AbstractIndexedArray{T} <: AbstractVector{T}
 
@@ -35,7 +35,7 @@ end
 
 IndexedArray{T}(items::Array{T}) = IndexedArray{T}(items)
 
-@delegate IndexedArray.items [ length, size, start, done, next ]
+@delegate IndexedArray.items [ length, size, isempty, start, done, next ]
 
 getindex(ia::IndexedArray, i::Int) = getindex(ia.items, i)
 getindex(ia::IndexedArray, r::UnitRange{Int}) = getindex(ia.items, r)
