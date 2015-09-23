@@ -85,6 +85,24 @@ end
 
 copy{T}(ia::IndexedArray{T}) = IndexedArray{T}(copy(ia.items))
 
-export AbstractIndexedArray, IndexedArray, IndexedArrayError, findfirst!
+"`swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`"
+function swap!(ia::IndexedArray, to::Int, from::Int)
+    if to == from
+        checkbounds(ia,to)
+        return ia
+    end
+    previous_id  = ia[to]
+    future_id    = ia[from]
+
+    ia.items[to]   = future_id
+    ia.items[from] = previous_id
+
+    ia.lookup[previous_id] = from
+    ia.lookup[future_id]   = to
+
+    return ia
+end
+
+export AbstractIndexedArray, IndexedArray, IndexedArrayError, findfirst!, swap!
 
 end # module
