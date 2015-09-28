@@ -53,6 +53,23 @@ ia2 = copy(ia)
 @test ia2[:] == ["cat", "dog", "mouse"]
 @test findfirst(ia2, "cat") == 1
 
+let ia = IndexedArray(["cat", "dog", "mouse", "human"]), original = copy(ia)
+
+    ia = swap!(ia, 2, 2)
+
+    @test ia == original
+    @test_throws BoundsError swap!(ia, 5, 5)
+
+    swap!(ia, 2, 3)
+
+    @test findfirst(ia, "mouse") == 2
+    @test findfirst(original, "mouse") == 3
+
+    @test findfirst(ia, "dog") == 3
+    @test findfirst(original, "dog") == 2
+end
+
+
 # setindex!
 
 # indexin, findin
