@@ -9,7 +9,7 @@ macro delegate(source, targets)
         funcname = esc(funcnames[i])
         fdefs[i] = quote
                      ($funcname)(a::($typename), args...) =
-                       ($funcname)(a.($fieldname), args...)
+                       ($funcname)(getfield(a, $fieldname), args...)
                    end
     end
     return Expr(:block, fdefs...)

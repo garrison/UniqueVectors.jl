@@ -4,7 +4,7 @@ using Base.Test
 @test length(IndexedArray([1,5,6,3])) == 4
 @test_throws IndexedArrayError IndexedArray([1,3,5,6,3])
 
-ia = IndexedArray{ASCIIString}()
+ia = IndexedArray{AbstractString}()
 
 @test isempty(ia)
 @test_throws ArgumentError pop!(ia)
