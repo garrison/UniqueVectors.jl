@@ -2,8 +2,6 @@ __precompile__()
 
 module IndexedArrays
 
-using Compat
-
 include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!
