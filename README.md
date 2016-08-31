@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/garrison/IndexedArrays.jl.svg?branch=master)](https://travis-ci.org/garrison/IndexedArrays.jl)
 [![Coverage Status](https://coveralls.io/repos/garrison/IndexedArrays.jl/badge.svg?branch=master)](https://coveralls.io/r/garrison/IndexedArrays.jl?branch=master)
-[![IndexedArrays](http://pkg.julialang.org/badges/IndexedArrays_release.svg)](http://pkg.julialang.org/?pkg=IndexedArrays&ver=release)
 
 `IndexedArray` is a data structure acts like a `Vector` of unique elements, but also maintains a dictionary that is updated in sync with the vector, which allows for quick lookup of the index of any element:
 
