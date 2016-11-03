@@ -32,6 +32,7 @@ immutable IndexedArray{T} <: AbstractIndexedArray{T}
 end
 
 IndexedArray{T}(items::Vector{T}) = IndexedArray{T}(items)
+IndexedArray{T}(items::AbstractVector{T}) = IndexedArray{T}(Vector{T}(items))
 
 @delegate IndexedArray.items [ length, size, isempty, start, done, next ]
 

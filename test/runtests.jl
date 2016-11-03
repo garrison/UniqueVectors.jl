@@ -69,6 +69,7 @@ let ia = IndexedArray(["cat", "dog", "mouse", "human"]), original = copy(ia)
     @test findfirst(original, "dog") == 2
 end
 
+@test IndexedArray([1,2,3,4]) == IndexedArray(1:4)
 
 # setindex!
 
