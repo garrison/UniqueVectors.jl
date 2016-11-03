@@ -13,11 +13,11 @@ type IndexedArrayError <: Exception # FIXME: or should we just use ArgumentError
 end
 
 immutable IndexedArray{T} <: AbstractIndexedArray{T}
-    items::Array{T}
+    items::Vector{T}
     lookup::Dict{T,Int}
 
     IndexedArray() = new(T[], Dict{T,Int}())
-    function IndexedArray{T}(items::Array{T})
+    function IndexedArray{T}(items::Vector{T})
         ia = new(items, Dict{T,Int}())
         sizehint!(ia.lookup, length(ia.items))
         for (i, item) in enumerate(ia.items)
@@ -31,7 +31,7 @@ immutable IndexedArray{T} <: AbstractIndexedArray{T}
     end
 end
 
-IndexedArray{T}(items::Array{T}) = IndexedArray{T}(items)
+IndexedArray{T}(items::Vector{T}) = IndexedArray{T}(items)
 
 @delegate IndexedArray.items [ length, size, isempty, start, done, next ]
 
