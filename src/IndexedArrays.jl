@@ -6,7 +6,9 @@ include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!
 
-abstract AbstractIndexedArray{T} <: AbstractVector{T}
+using Compat
+
+@compat abstract type AbstractIndexedArray{T} <: AbstractVector{T} end
 
 type IndexedArrayError <: Exception # FIXME: or should we just use ArgumentError here?
     msg::AbstractString
@@ -16,9 +18,9 @@ immutable IndexedArray{T} <: AbstractIndexedArray{T}
     items::Vector{T}
     lookup::Dict{T,Int}
 
-    IndexedArray() = new(T[], Dict{T,Int}())
-    function IndexedArray{T}(items::Vector{T})
-        ia = new(items, Dict{T,Int}())
+    (::Type{IndexedArray{T}}){T}() = new{T}(T[], Dict{T,Int}())
+    function (::Type{IndexedArray{T}}){T}(items::Vector{T})
+        ia = new{T}(items, Dict{T,Int}())
         sizehint!(ia.lookup, length(ia.items))
         for (i, item) in enumerate(ia.items)
             if item in ia
