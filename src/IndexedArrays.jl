@@ -62,6 +62,12 @@ function findfirst!{T}(ia::IndexedArray{T}, item::T)
     return rv
 end
 
+findfirst{T}(ia::IndexedArray{T}, item) =
+    findfirst(ia, convert(T, item))
+
+findfirst!{T}(ia::IndexedArray{T}, item) =
+    findfirst!(ia, convert(T, item))
+
 function push!{T}(ia::IndexedArray{T}, item::T)
     if item in ia
         throw(IndexedArrayError("cannot add duplicate item to IndexedArray"))

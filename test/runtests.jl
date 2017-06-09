@@ -29,6 +29,8 @@ ia = IndexedArray{AbstractString}()
 @test endof(ia) == 3
 
 ia2 = IndexedArray([1, 2, 3])
+@test findfirst(ia2, 0x02) == 2
+@test findfirst!(ia2, 0x02) == 2
 for elt in [3,2,1]
     @test pop!(ia2) == elt
 end
