@@ -4,7 +4,7 @@ using Base.Test
 @test length(IndexedArray([1,5,6,3])) == 4
 @test_throws IndexedArrayError IndexedArray([1,3,5,6,3])
 
-ia = IndexedArray{AbstractString}()
+ia = IndexedArray{String}()
 
 @test isempty(ia)
 @test_throws ArgumentError pop!(ia)
@@ -72,6 +72,14 @@ let ia = IndexedArray(["cat", "dog", "mouse", "human"]), original = copy(ia)
 end
 
 @test IndexedArray([1,2,3,4]) == IndexedArray(1:4)
+
+# Test it works with `Any` datatype
+let ia3 = IndexedArray([1,"cat",2,"dog"])
+    @test eltype(ia3) == Any
+    @test findfirst(ia3, 1) == 1
+    @test findfirst!(ia3, "dog") == 4
+    @test findfirst!(ia3, "horse") == 5
+end
 
 # setindex!
 
