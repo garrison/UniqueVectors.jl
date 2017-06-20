@@ -1,10 +1,10 @@
-using IndexedArrays
+using UniqueVectors
 using Base.Test
 
-@test length(IndexedArray([1,5,6,3])) == 4
-@test_throws IndexedArrayError IndexedArray([1,3,5,6,3])
+@test length(UniqueVector([1,5,6,3])) == 4
+@test_throws UniqueVectorError UniqueVector([1,3,5,6,3])
 
-ia = IndexedArray{String}()
+ia = UniqueVector{String}()
 
 @test isempty(ia)
 @test_throws ArgumentError pop!(ia)
@@ -28,7 +28,7 @@ ia = IndexedArray{String}()
 @test length(ia) == 3
 @test endof(ia) == 3
 
-ia2 = IndexedArray([1, 2, 3])
+ia2 = UniqueVector([1, 2, 3])
 @test findfirst(ia2, 0x02) == 2
 @test findfirst!(ia2, 0x02) == 2
 for elt in [3,2,1]
@@ -43,7 +43,7 @@ ia2 = copy(ia)
 @test isempty(ia)
 @test_throws KeyError findfirst(ia, "cat")
 @test findfirst!(ia, "horse") == 1
-@test_throws IndexedArrayError push!(ia, "horse")
+@test_throws UniqueVectorError push!(ia, "horse")
 @test length(ia) == 1
 @test push!(ia, "human") === ia
 @test findfirst(ia, "human") == 2
@@ -55,7 +55,7 @@ ia2 = copy(ia)
 @test ia2[:] == ["cat", "dog", "mouse"]
 @test findfirst(ia2, "cat") == 1
 
-let ia = IndexedArray(["cat", "dog", "mouse", "human"]), original = copy(ia)
+let ia = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(ia)
 
     ia = swap!(ia, 2, 2)
 
@@ -71,10 +71,10 @@ let ia = IndexedArray(["cat", "dog", "mouse", "human"]), original = copy(ia)
     @test findfirst(original, "dog") == 2
 end
 
-@test IndexedArray([1,2,3,4]) == IndexedArray(1:4)
+@test UniqueVector([1,2,3,4]) == UniqueVector(1:4)
 
 # Test it works with `Any` datatype
-let ia3 = IndexedArray([1,"cat",2,"dog"])
+let ia3 = UniqueVector([1,"cat",2,"dog"])
     @test eltype(ia3) == Any
     @test findfirst(ia3, 1) == 1
     @test findfirst!(ia3, "dog") == 4

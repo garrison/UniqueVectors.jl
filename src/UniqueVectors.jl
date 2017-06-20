@@ -1,6 +1,6 @@
 __precompile__()
 
-module IndexedArrays
+module UniqueVectors
 
 include("delegate.jl")
 
@@ -8,23 +8,23 @@ import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, 
 
 using Compat
 
-@compat abstract type AbstractIndexedArray{T} <: AbstractVector{T} end
+@compat abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
-type IndexedArrayError <: Exception # FIXME: or should we just use ArgumentError here?
+type UniqueVectorError <: Exception # FIXME: or should we just use ArgumentError here?
     msg::AbstractString
 end
 
-immutable IndexedArray{T} <: AbstractIndexedArray{T}
+immutable UniqueVector{T} <: AbstractUniqueVector{T}
     items::Vector{T}
     lookup::Dict{T,Int}
 
-    (::Type{IndexedArray{T}}){T}() = new{T}(T[], Dict{T,Int}())
-    function (::Type{IndexedArray{T}}){T}(items::Vector{T})
+    (::Type{UniqueVector{T}}){T}() = new{T}(T[], Dict{T,Int}())
+    function (::Type{UniqueVector{T}}){T}(items::Vector{T})
         ia = new{T}(items, Dict{T,Int}())
         sizehint!(ia.lookup, length(ia.items))
         for (i, item) in enumerate(ia.items)
             if item in ia
-                throw(IndexedArrayError("cannot construct IndexedArray with duplicate items"))
+                throw(UniqueVectorError("cannot construct UniqueVector with duplicate items"))
             end
             ia.lookup[item] = i
         end
@@ -33,26 +33,26 @@ immutable IndexedArray{T} <: AbstractIndexedArray{T}
     end
 end
 
-IndexedArray{T}(items::Vector{T}) = IndexedArray{T}(items)
-IndexedArray{T}(items::AbstractVector{T}) = IndexedArray{T}(Vector{T}(items))
+UniqueVector{T}(items::Vector{T}) = UniqueVector{T}(items)
+UniqueVector{T}(items::AbstractVector{T}) = UniqueVector{T}(Vector{T}(items))
 
-@delegate IndexedArray.items [ length, size, isempty, start, done, next ]
+@delegate UniqueVector.items [ length, size, isempty, start, done, next ]
 
-getindex(ia::IndexedArray, i::Int) = getindex(ia.items, i)
-getindex(ia::IndexedArray, r::UnitRange{Int}) = getindex(ia.items, r)
+getindex(ia::UniqueVector, i::Int) = getindex(ia.items, i)
+getindex(ia::UniqueVector, r::UnitRange{Int}) = getindex(ia.items, r)
 
-function empty!(ia::IndexedArray)
+function empty!(ia::UniqueVector)
     # NOTE: does not provide any exception safety guarantee
     empty!(ia.items)
     empty!(ia.lookup)
     return ia
 end
 
-in{T}(item::T, ia::IndexedArray{T}) = haskey(ia.lookup, item)
+in{T}(item::T, ia::UniqueVector{T}) = haskey(ia.lookup, item)
 
-findfirst{T}(ia::IndexedArray{T}, item::T) = ia.lookup[item] # throws KeyError if not found
+findfirst{T}(ia::UniqueVector{T}, item::T) = ia.lookup[item] # throws KeyError if not found
 
-function findfirst!{T}(ia::IndexedArray{T}, item::T)
+function findfirst!{T}(ia::UniqueVector{T}, item::T)
     rv = get!(ia.lookup, item) do
         # NOTE: does not provide any exception safety guarantee
         push!(ia.items, item)
@@ -62,15 +62,15 @@ function findfirst!{T}(ia::IndexedArray{T}, item::T)
     return rv
 end
 
-findfirst{T}(ia::IndexedArray{T}, item) =
+findfirst{T}(ia::UniqueVector{T}, item) =
     findfirst(ia, convert(T, item))
 
-findfirst!{T}(ia::IndexedArray{T}, item) =
+findfirst!{T}(ia::UniqueVector{T}, item) =
     findfirst!(ia, convert(T, item))
 
-function push!{T}(ia::IndexedArray{T}, item::T)
+function push!{T}(ia::UniqueVector{T}, item::T)
     if item in ia
-        throw(IndexedArrayError("cannot add duplicate item to IndexedArray"))
+        throw(UniqueVectorError("cannot add duplicate item to UniqueVector"))
     end
     # NOTE: does not provide any exception safety guarantee
     push!(ia.items, item)
@@ -79,7 +79,7 @@ function push!{T}(ia::IndexedArray{T}, item::T)
     return ia
 end
 
-function pop!(ia::IndexedArray)
+function pop!(ia::UniqueVector)
     if isempty(ia.items)
         throw(ArgumentError("array must be non-empty"))
     end
@@ -90,10 +90,10 @@ function pop!(ia::IndexedArray)
     return rv
 end
 
-copy{T}(ia::IndexedArray{T}) = IndexedArray{T}(copy(ia.items))
+copy{T}(ia::UniqueVector{T}) = UniqueVector{T}(copy(ia.items))
 
-"`swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`"
-function swap!(ia::IndexedArray, to::Int, from::Int)
+"`swap!(ia::UniqueVector, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `UniqueVector`"
+function swap!(ia::UniqueVector, to::Int, from::Int)
     if to == from
         checkbounds(ia,to)
         return ia
@@ -110,6 +110,6 @@ function swap!(ia::IndexedArray, to::Int, from::Int)
     return ia
 end
 
-export AbstractIndexedArray, IndexedArray, IndexedArrayError, findfirst!, swap!
+export AbstractUniqueVector, UniqueVector, UniqueVectorError, findfirst!, swap!
 
 end # module
