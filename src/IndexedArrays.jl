@@ -2,6 +2,8 @@ __precompile__()
 
 module IndexedArrays
 
+warn("The IndexedArrays package is deprecated. It is now named UniqueVectors; please use that package instead.")
+
 include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!
