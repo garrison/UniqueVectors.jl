@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/garrison/UniqueVectors.jl.svg?branch=master)](https://travis-ci.org/garrison/UniqueVectors.jl)
 [![Coverage Status](https://coveralls.io/repos/garrison/UniqueVectors.jl/badge.svg?branch=master)](https://coveralls.io/r/garrison/UniqueVectors.jl?branch=master)
 
+    julia> Pkg.add("UniqueVectors")
+
 `UniqueVector` is a data structure acts like a `Vector` of unique elements, but also maintains a dictionary that is updated in sync with the vector, which allows for quick lookup of the index of any element:
 
 	julia> using UniqueVectors
