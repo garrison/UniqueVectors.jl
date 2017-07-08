@@ -35,6 +35,7 @@ end
 
 UniqueVector{T}(items::Vector{T}) = UniqueVector{T}(items)
 UniqueVector{T}(items::AbstractVector{T}) = UniqueVector{T}(Vector{T}(items))
+UniqueVector(items) = UniqueVector(collect(items))
 
 @delegate UniqueVector.items [ length, size, isempty, start, done, next ]
 
