@@ -4,7 +4,7 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!
+import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!
 
 using Compat
 
@@ -89,6 +89,18 @@ function pop!(ia::UniqueVector)
     rv = pop!(ia.items)
     @assert length(ia.items) == length(ia.lookup)
     return rv
+end
+
+function setindex!{T}(ia::UniqueVector{T}, item::T, idx::Integer)
+    checkbounds(ia, idx)
+    ia[idx] == item && return ia # nothing to do
+    item ∉ ia || throw(ArgumentError(""))
+    # NOTE: does not provide any exception safety guarantee
+    delete!(ia.lookup, ia.items[idx])
+    ia.items[idx] = item
+    ia.lookup[item] = idx
+    @assert length(ia.items) == length(ia.lookup)
+    return ia
 end
 
 copy{T}(ia::UniqueVector{T}) = UniqueVector{T}(copy(ia.items))

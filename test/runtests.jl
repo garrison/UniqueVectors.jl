@@ -82,7 +82,16 @@ let ia3 = UniqueVector([1,"cat",2,"dog"])
     @test findfirst!(ia3, "horse") == 5
 end
 
-# setindex!
+# Test setindex!
+ia4 = UniqueVector(["cat", "dog", "mouse"])
+@test_throws BoundsError ia4[4] = "horse"
+ia4[2] = "horse"
+ia4[3] = "dog"
+@test ia4[:] == ["cat", "horse", "dog"]
+ia4[1] = "cat"
+@test_throws ArgumentError ia4[2] = "dog"
+push!(ia4, "mouse")
+@test ia4[:] == ["cat", "horse", "dog", "mouse"]
 
 # indexin, findin
 
