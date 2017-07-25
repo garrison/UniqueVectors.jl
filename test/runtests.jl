@@ -8,7 +8,7 @@ ia = UniqueVector{String}()
 
 @test isempty(ia)
 @test_throws ArgumentError pop!(ia)
-@test_throws KeyError findfirst(ia, "cat")
+@test findfirst(ia, "cat") == 0
 @test findfirst!(ia, "cat") == 1
 @test !isempty(ia)
 @test "cat" in ia
@@ -42,7 +42,7 @@ ia2 = copy(ia)
 
 @test empty!(ia) === ia
 @test isempty(ia)
-@test_throws KeyError findfirst(ia, "cat")
+@test findfirst(ia, "cat") == 0
 @test findfirst!(ia, "horse") == 1
 @test_throws UniqueVectorError push!(ia, "horse")
 @test length(ia) == 1
@@ -51,7 +51,7 @@ ia2 = copy(ia)
 @test pop!(ia) == "human"
 @test length(ia) == 1
 @test ia[:] == ["horse"]
-@test_throws KeyError findfirst(ia, "human")
+@test findfirst(ia, "human") == 0
 
 @test ia2[:] == ["cat", "dog", "mouse"]
 @test findfirst(ia2, "cat") == 1

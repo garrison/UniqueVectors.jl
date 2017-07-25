@@ -51,7 +51,8 @@ end
 
 in{T}(item::T, ia::UniqueVector{T}) = haskey(ia.lookup, item)
 
-findfirst{T}(ia::UniqueVector{T}, item::T) = ia.lookup[item] # throws KeyError if not found
+findfirst{T}(ia::UniqueVector{T}, item::T) =
+    get(ia.lookup, item, 0)
 
 function findfirst!{T}(ia::UniqueVector{T}, item::T)
     rv = get!(ia.lookup, item) do
