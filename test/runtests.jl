@@ -89,7 +89,7 @@ ia4[2] = "horse"
 ia4[3] = "dog"
 @test ia4[:] == ["cat", "horse", "dog"]
 ia4[1] = "cat"
-@test_throws ArgumentError ia4[2] = "dog"
+@test_throws UniqueVectorError ia4[2] = "dog"
 push!(ia4, "mouse")
 @test ia4[:] == ["cat", "horse", "dog", "mouse"]
 

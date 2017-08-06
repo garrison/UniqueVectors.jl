@@ -95,7 +95,7 @@ end
 function setindex!{T}(ia::UniqueVector{T}, item::T, idx::Integer)
     checkbounds(ia, idx)
     ia[idx] == item && return ia # nothing to do
-    item ∉ ia || throw(ArgumentError(""))
+    item ∉ ia || throw(UniqueVectorError("cannot set an element that exists elsewhere in UniqueVector"))
     # NOTE: does not provide any exception safety guarantee
     delete!(ia.lookup, ia.items[idx])
     ia.items[idx] = item
