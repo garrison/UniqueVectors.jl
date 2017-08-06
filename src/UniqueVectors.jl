@@ -6,21 +6,19 @@ include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!
 
-using Compat
+abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
-@compat abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
-
-type UniqueVectorError <: Exception # FIXME: or should we just use ArgumentError here?
+struct UniqueVectorError <: Exception # FIXME: or should we just use ArgumentError here?
     msg::AbstractString
 end
 
-immutable UniqueVector{T} <: AbstractUniqueVector{T}
+struct UniqueVector{T} <: AbstractUniqueVector{T}
     items::Vector{T}
     lookup::Dict{T,Int}
 
-    (::Type{UniqueVector{T}}){T}() = new{T}(T[], Dict{T,Int}())
-    function (::Type{UniqueVector{T}}){T}(items::Vector{T})
-        ia = new{T}(items, Dict{T,Int}())
+    UniqueVector{T}() where {T} = new(T[], Dict{T,Int}())
+    function UniqueVector{T}(items::Vector{T}) where {T}
+        ia = new(items, Dict{T,Int}())
         sizehint!(ia.lookup, length(ia.items))
         for (i, item) in enumerate(ia.items)
             if item in ia
@@ -33,8 +31,8 @@ immutable UniqueVector{T} <: AbstractUniqueVector{T}
     end
 end
 
-UniqueVector{T}(items::Vector{T}) = UniqueVector{T}(items)
-UniqueVector{T}(items::AbstractVector{T}) = UniqueVector{T}(Vector{T}(items))
+UniqueVector(items::Vector{T}) where {T} = UniqueVector{T}(items)
+UniqueVector(items::AbstractVector{T}) where {T} = UniqueVector{T}(Vector{T}(items))
 UniqueVector(items) = UniqueVector(collect(items))
 
 @delegate UniqueVector.items [ length, size, isempty, start, done, next ]
@@ -49,12 +47,12 @@ function empty!(ia::UniqueVector)
     return ia
 end
 
-in{T}(item::T, ia::UniqueVector{T}) = haskey(ia.lookup, item)
+in(item::T, ia::UniqueVector{T}) where {T} = haskey(ia.lookup, item)
 
-findfirst{T}(ia::UniqueVector{T}, item::T) =
+findfirst(ia::UniqueVector{T}, item::T) where {T} =
     get(ia.lookup, item, 0)
 
-function findfirst!{T}(ia::UniqueVector{T}, item::T)
+function findfirst!(ia::UniqueVector{T}, item::T) where {T}
     rv = get!(ia.lookup, item) do
         # NOTE: does not provide any exception safety guarantee
         push!(ia.items, item)
@@ -64,13 +62,13 @@ function findfirst!{T}(ia::UniqueVector{T}, item::T)
     return rv
 end
 
-findfirst{T}(ia::UniqueVector{T}, item) =
+findfirst(ia::UniqueVector{T}, item) where {T} =
     findfirst(ia, convert(T, item))
 
-findfirst!{T}(ia::UniqueVector{T}, item) =
+findfirst!(ia::UniqueVector{T}, item) where {T} =
     findfirst!(ia, convert(T, item))
 
-function push!{T}(ia::UniqueVector{T}, item::T)
+function push!(ia::UniqueVector{T}, item::T) where {T}
     if item in ia
         throw(UniqueVectorError("cannot add duplicate item to UniqueVector"))
     end
@@ -92,7 +90,7 @@ function pop!(ia::UniqueVector)
     return rv
 end
 
-function setindex!{T}(ia::UniqueVector{T}, item::T, idx::Integer)
+function setindex!(ia::UniqueVector{T}, item::T, idx::Integer) where {T}
     checkbounds(ia, idx)
     ia[idx] == item && return ia # nothing to do
     item ∉ ia || throw(UniqueVectorError("cannot set an element that exists elsewhere in UniqueVector"))
@@ -104,7 +102,7 @@ function setindex!{T}(ia::UniqueVector{T}, item::T, idx::Integer)
     return ia
 end
 
-copy{T}(ia::UniqueVector{T}) = UniqueVector{T}(copy(ia.items))
+copy(ia::UniqueVector) = UniqueVector(copy(ia.items))
 
 "`swap!(ia::UniqueVector, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `UniqueVector`"
 function swap!(ia::UniqueVector, to::Int, from::Int)
