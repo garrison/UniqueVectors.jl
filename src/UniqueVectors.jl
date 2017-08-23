@@ -48,6 +48,7 @@ function empty!(ia::UniqueVector)
 end
 
 in(item::T, ia::UniqueVector{T}) where {T} = haskey(ia.lookup, item)
+in(item, ia::UniqueVector{T}) where {T} = in(convert(T, item), ia)
 
 findfirst(ia::UniqueVector{T}, item::T) where {T} =
     get(ia.lookup, item, 0)
@@ -79,6 +80,9 @@ function push!(ia::UniqueVector{T}, item::T) where {T}
     return ia
 end
 
+push!(ia::UniqueVector{T}, item) where {T} =
+    push!(ia, convert(T, item))
+
 function pop!(ia::UniqueVector)
     if isempty(ia.items)
         throw(ArgumentError("array must be non-empty"))
@@ -101,6 +105,9 @@ function setindex!(ia::UniqueVector{T}, item::T, idx::Integer) where {T}
     @assert length(ia.items) == length(ia.lookup)
     return ia
 end
+
+setindex!(ia::UniqueVector{T}, item, idx::Integer) where {T} =
+    setindex!(ia, convert(T, item), idx)
 
 copy(ia::UniqueVector) = UniqueVector(copy(ia.items))
 

@@ -93,6 +93,13 @@ ia4[1] = "cat"
 push!(ia4, "mouse")
 @test ia4[:] == ["cat", "horse", "dog", "mouse"]
 
+ia5 = UniqueVector{Float64}()
+push!(ia5, 3)
+@test ia5[:] == [3.0]
+ia5[1] = 4
+@test ia5[:] == [4.0]
+@test 4 ∈ ia5
+
 # indexin, findin
 
 # findlast?, findnext, findprev
