@@ -18,6 +18,7 @@ ia = UniqueVector{String}()
 @test findfirst!(ia, "mouse") == 3
 @test findfirst!(ia, "dog") == 2
 @test findfirst(ia, "cat") == 1
+@test findlast(ia, "cat") == 1
 @test findfirst(ia, "dog") == 2
 @test findfirst(ia, "mouse") == 3
 @test ia[1] == "cat"
@@ -100,7 +101,19 @@ push!(ia5, 3)
 ia5[1] = 4
 @test ia5[:] == [4.0]
 @test 4 ∈ ia5
+@test findfirst(ia5, 4) == 1
+@test findlast(ia5, 4) == 1
 
-# indexin, findin
+# Test indexin and findin
+@test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,0,1,6,5,2]
+@test findin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [1,3,4,5,6]
 
-# findlast?, findnext, findprev
+# Test findnext and findprev
+@test findnext(UniqueVector([3,5,7,9]), 7, 1) == 3
+@test findnext(UniqueVector([3,5,7,9]), 7, 2) == 3
+@test findnext(UniqueVector([3,5,7,9]), 7, 3) == 3
+@test findnext(UniqueVector([3,5,7,9]), 7, 4) == 0
+@test findprev(UniqueVector([3,5,7,9]), 7, 1) == 0
+@test findprev(UniqueVector([3,5,7,9]), 7, 2) == 0
+@test findprev(UniqueVector([3,5,7,9]), 7, 3) == 3
+@test findprev(UniqueVector([3,5,7,9]), 7, 4) == 3
