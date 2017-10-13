@@ -35,10 +35,7 @@ UniqueVector(items::Vector{T}) where {T} = UniqueVector{T}(items)
 UniqueVector(items::AbstractVector{T}) where {T} = UniqueVector{T}(Vector{T}(items))
 UniqueVector(items) = UniqueVector(collect(items))
 
-@delegate UniqueVector.items [ length, size, isempty, start, done, next ]
-
-getindex(ia::UniqueVector, i::Int) = getindex(ia.items, i)
-getindex(ia::UniqueVector, r::UnitRange{Int}) = getindex(ia.items, r)
+@delegate UniqueVector.items [ length, size, isempty, getindex, start, done, next ]
 
 function empty!(ia::UniqueVector)
     # NOTE: does not provide any exception safety guarantee

@@ -92,6 +92,7 @@ ia4[1] = "cat"
 @test_throws UniqueVectorError ia4[2] = "dog"
 push!(ia4, "mouse")
 @test ia4[:] == ["cat", "horse", "dog", "mouse"]
+@test ia4[1:2] == ["cat", "horse"]
 
 ia5 = UniqueVector{Float64}()
 push!(ia5, 3)
