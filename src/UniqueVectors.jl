@@ -66,6 +66,9 @@ findfirst(ia::UniqueVector{T}, item) where {T} =
 findfirst!(ia::UniqueVector{T}, item) where {T} =
     findfirst!(ia, convert(T, item))
 
+findlast(ia::UniqueVector, item) =
+    findfirst(ia, item)
+
 indexin(a::AbstractArray, b::UniqueVector) =
     [findfirst(b, elt) for elt in a]
 
