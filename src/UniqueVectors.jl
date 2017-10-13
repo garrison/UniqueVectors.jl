@@ -4,7 +4,7 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin
+import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
@@ -74,6 +74,16 @@ indexin(a::AbstractArray, b::UniqueVector) =
 
 findin(a, b::UniqueVector) =
     [i for (i, ai) in enumerate(a) if ai ∈ b]
+
+function findnext(A::UniqueVector, v, i::Integer)
+    idx = findfirst(A, v)
+    idx >= i ? idx : 0
+end
+
+function findprev(A::UniqueVector, v, i::Integer)
+    idx = findfirst(A, v)
+    idx <= i ? idx : 0
+end
 
 function push!(ia::UniqueVector{T}, item::T) where {T}
     if item in ia
