@@ -2,7 +2,7 @@ using UniqueVectors
 using Base.Test
 
 @test length(UniqueVector([1,5,6,3])) == 4
-@test_throws UniqueVectorError UniqueVector([1,3,5,6,3])
+@test_throws ArgumentError UniqueVector([1,3,5,6,3])
 
 ia = UniqueVector{String}()
 
@@ -45,7 +45,7 @@ ia2 = copy(ia)
 @test isempty(ia)
 @test findfirst(ia, "cat") == 0
 @test findfirst!(ia, "horse") == 1
-@test_throws UniqueVectorError push!(ia, "horse")
+@test_throws ArgumentError push!(ia, "horse")
 @test length(ia) == 1
 @test push!(ia, "human") === ia
 @test findfirst(ia, "human") == 2
@@ -90,7 +90,7 @@ ia4[2] = "horse"
 ia4[3] = "dog"
 @test ia4[:] == ["cat", "horse", "dog"]
 ia4[1] = "cat"
-@test_throws UniqueVectorError ia4[2] = "dog"
+@test_throws ArgumentError ia4[2] = "dog"
 push!(ia4, "mouse")
 @test ia4[:] == ["cat", "horse", "dog", "mouse"]
 @test ia4[1:2] == ["cat", "horse"]

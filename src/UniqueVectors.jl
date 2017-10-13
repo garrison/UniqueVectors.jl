@@ -8,9 +8,7 @@ import Base: copy, in, getindex, findfirst, length, size, isempty, start, done, 
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
-struct UniqueVectorError <: Exception # FIXME: or should we just use ArgumentError here?
-    msg::AbstractString
-end
+Base.@deprecate_binding UniqueVectorError ArgumentError
 
 struct UniqueVector{T} <: AbstractUniqueVector{T}
     items::Vector{T}
@@ -22,7 +20,7 @@ struct UniqueVector{T} <: AbstractUniqueVector{T}
         sizehint!(ia.lookup, length(ia.items))
         for (i, item) in enumerate(ia.items)
             if item in ia
-                throw(UniqueVectorError("cannot construct UniqueVector with duplicate items"))
+                throw(ArgumentError("cannot construct UniqueVector with duplicate items"))
             end
             ia.lookup[item] = i
         end
@@ -87,7 +85,7 @@ end
 
 function push!(ia::UniqueVector{T}, item::T) where {T}
     if item in ia
-        throw(UniqueVectorError("cannot add duplicate item to UniqueVector"))
+        throw(ArgumentError("cannot add duplicate item to UniqueVector"))
     end
     # NOTE: does not provide any exception safety guarantee
     push!(ia.items, item)
@@ -113,7 +111,7 @@ end
 function setindex!(ia::UniqueVector{T}, item::T, idx::Integer) where {T}
     checkbounds(ia, idx)
     ia[idx] == item && return ia # nothing to do
-    item ∉ ia || throw(UniqueVectorError("cannot set an element that exists elsewhere in UniqueVector"))
+    item ∉ ia || throw(ArgumentError("cannot set an element that exists elsewhere in UniqueVector"))
     # NOTE: does not provide any exception safety guarantee
     delete!(ia.lookup, ia.items[idx])
     ia.items[idx] = item
@@ -145,6 +143,6 @@ function swap!(ia::UniqueVector, to::Int, from::Int)
     return ia
 end
 
-export AbstractUniqueVector, UniqueVector, UniqueVectorError, findfirst!, swap!
+export AbstractUniqueVector, UniqueVector, findfirst!, swap!
 
 end # module
