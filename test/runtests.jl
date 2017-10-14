@@ -15,6 +15,10 @@ ia = UniqueVector{String}()
 @test !isempty(ia)
 @test "cat" in ia
 @test "dog" ∉ ia
+@test count(equalto("cat"), ia) == 1
+@test count(equalto("dog"), ia) == 0
+@test find(equalto("cat"), ia) == [1]
+@test find(equalto("dog"), ia) == Int[]
 @test findfirst!(equalto("dog"), ia) == 2
 @test findfirst!(equalto("cat"), ia) == 1
 @test findfirst!(equalto("mouse"), ia) == 3
@@ -81,6 +85,9 @@ end
 let ia3 = UniqueVector([1,"cat",2,"dog"])
     @test eltype(ia3) == Any
     @test findfirst(equalto(1), ia3) == 1
+    @test findlast(equalto(1), ia3) == 1
+    @test find(equalto(1), ia3) == [1]
+    @test count(equalto(1), ia3) == 1
     @test findfirst!(equalto("dog"), ia3) == 4
     @test findfirst!(equalto("horse"), ia3) == 5
 end
@@ -105,6 +112,7 @@ ia5[1] = 4
 @test 4 ∈ ia5
 @test findfirst(equalto(4), ia5) == 1
 @test findlast(equalto(4), ia5) == 1
+@test find(equalto(4), ia5) == [1]
 
 # Test indexin and findin
 @test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,0,1,6,5,2]

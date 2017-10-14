@@ -6,7 +6,7 @@ using Compat
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev, find, count
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
@@ -94,6 +94,14 @@ function findprev(p::equalto, A::UniqueVector, i::Integer)
 end
 
 @deprecate findprev(A::UniqueVector, v, i::Integer) findprev(equalto(v), A, i)
+
+function find(p::equalto, uv::UniqueVector)
+    idx = findfirst(p, uv)
+    (idx == 0) ? Int[] : Int[idx]
+end
+
+count(p::equalto, uv::UniqueVector) =
+    Int(p.x ∈ uv)
 
 function push!(ia::UniqueVector{T}, item::T) where {T}
     if item in ia
