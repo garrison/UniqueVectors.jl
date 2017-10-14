@@ -1,5 +1,5 @@
 using UniqueVectors
-using Base.Test
+using Compat.Test
 
 using Compat
 
