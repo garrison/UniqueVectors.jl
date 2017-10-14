@@ -1,6 +1,8 @@
 using UniqueVectors
 using Base.Test
 
+using Compat
+
 @test length(UniqueVector([1,5,6,3])) == 4
 @test_throws ArgumentError UniqueVector([1,3,5,6,3])
 
@@ -8,19 +10,19 @@ ia = UniqueVector{String}()
 
 @test isempty(ia)
 @test_throws ArgumentError pop!(ia)
-@test findfirst(ia, "cat") == 0
-@test findfirst!(ia, "cat") == 1
+@test findfirst(equalto("cat"), ia) == 0
+@test findfirst!(equalto("cat"), ia) == 1
 @test !isempty(ia)
 @test "cat" in ia
 @test "dog" ∉ ia
-@test findfirst!(ia, "dog") == 2
-@test findfirst!(ia, "cat") == 1
-@test findfirst!(ia, "mouse") == 3
-@test findfirst!(ia, "dog") == 2
-@test findfirst(ia, "cat") == 1
-@test findlast(ia, "cat") == 1
-@test findfirst(ia, "dog") == 2
-@test findfirst(ia, "mouse") == 3
+@test findfirst!(equalto("dog"), ia) == 2
+@test findfirst!(equalto("cat"), ia) == 1
+@test findfirst!(equalto("mouse"), ia) == 3
+@test findfirst!(equalto("dog"), ia) == 2
+@test findfirst(equalto("cat"), ia) == 1
+@test findlast(equalto("cat"), ia) == 1
+@test findfirst(equalto("dog"), ia) == 2
+@test findfirst(equalto("mouse"), ia) == 3
 @test ia[1] == "cat"
 @test ia[2] == "dog"
 @test ia[3] == "mouse"
@@ -30,8 +32,8 @@ ia = UniqueVector{String}()
 @test endof(ia) == 3
 
 ia2 = UniqueVector([1, 2, 3])
-@test findfirst(ia2, 0x02) == 2
-@test findfirst!(ia2, 0x02) == 2
+@test findfirst(equalto(0x02), ia2) == 2
+@test findfirst!(equalto(0x02), ia2) == 2
 @test ia2 == UniqueVector(i for i in 1:3)
 for elt in [3,2,1]
     @test pop!(ia2) == elt
@@ -43,19 +45,19 @@ ia2 = copy(ia)
 
 @test empty!(ia) === ia
 @test isempty(ia)
-@test findfirst(ia, "cat") == 0
-@test findfirst!(ia, "horse") == 1
+@test findfirst(equalto("cat"), ia) == 0
+@test findfirst!(equalto("horse"), ia) == 1
 @test_throws ArgumentError push!(ia, "horse")
 @test length(ia) == 1
 @test push!(ia, "human") === ia
-@test findfirst(ia, "human") == 2
+@test findfirst(equalto("human"), ia) == 2
 @test pop!(ia) == "human"
 @test length(ia) == 1
 @test ia[:] == ["horse"]
-@test findfirst(ia, "human") == 0
+@test findfirst(equalto("human"), ia) == 0
 
 @test ia2[:] == ["cat", "dog", "mouse"]
-@test findfirst(ia2, "cat") == 1
+@test findfirst(equalto("cat"), ia2) == 1
 
 let ia = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(ia)
 
@@ -66,11 +68,11 @@ let ia = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(ia)
 
     swap!(ia, 2, 3)
 
-    @test findfirst(ia, "mouse") == 2
-    @test findfirst(original, "mouse") == 3
+    @test findfirst(equalto("mouse"), ia) == 2
+    @test findfirst(equalto("mouse"), original) == 3
 
-    @test findfirst(ia, "dog") == 3
-    @test findfirst(original, "dog") == 2
+    @test findfirst(equalto("dog"), ia) == 3
+    @test findfirst(equalto("dog"), original) == 2
 end
 
 @test UniqueVector([1,2,3,4]) == UniqueVector(1:4)
@@ -78,9 +80,9 @@ end
 # Test it works with `Any` datatype
 let ia3 = UniqueVector([1,"cat",2,"dog"])
     @test eltype(ia3) == Any
-    @test findfirst(ia3, 1) == 1
-    @test findfirst!(ia3, "dog") == 4
-    @test findfirst!(ia3, "horse") == 5
+    @test findfirst(equalto(1), ia3) == 1
+    @test findfirst!(equalto("dog"), ia3) == 4
+    @test findfirst!(equalto("horse"), ia3) == 5
 end
 
 # Test setindex!
@@ -101,19 +103,19 @@ push!(ia5, 3)
 ia5[1] = 4
 @test ia5[:] == [4.0]
 @test 4 ∈ ia5
-@test findfirst(ia5, 4) == 1
-@test findlast(ia5, 4) == 1
+@test findfirst(equalto(4), ia5) == 1
+@test findlast(equalto(4), ia5) == 1
 
 # Test indexin and findin
 @test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,0,1,6,5,2]
 @test findin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [1,3,4,5,6]
 
 # Test findnext and findprev
-@test findnext(UniqueVector([3,5,7,9]), 7, 1) == 3
-@test findnext(UniqueVector([3,5,7,9]), 7, 2) == 3
-@test findnext(UniqueVector([3,5,7,9]), 7, 3) == 3
-@test findnext(UniqueVector([3,5,7,9]), 7, 4) == 0
-@test findprev(UniqueVector([3,5,7,9]), 7, 1) == 0
-@test findprev(UniqueVector([3,5,7,9]), 7, 2) == 0
-@test findprev(UniqueVector([3,5,7,9]), 7, 3) == 3
-@test findprev(UniqueVector([3,5,7,9]), 7, 4) == 3
+@test findnext(equalto(7), UniqueVector([3,5,7,9]), 1) == 3
+@test findnext(equalto(7), UniqueVector([3,5,7,9]), 2) == 3
+@test findnext(equalto(7), UniqueVector([3,5,7,9]), 3) == 3
+@test findnext(equalto(7), UniqueVector([3,5,7,9]), 4) == 0
+@test findprev(equalto(7), UniqueVector([3,5,7,9]), 1) == 0
+@test findprev(equalto(7), UniqueVector([3,5,7,9]), 2) == 0
+@test findprev(equalto(7), UniqueVector([3,5,7,9]), 3) == 3
+@test findprev(equalto(7), UniqueVector([3,5,7,9]), 4) == 3

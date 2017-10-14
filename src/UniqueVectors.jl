@@ -2,6 +2,8 @@ __precompile__()
 
 module UniqueVectors
 
+using Compat
+
 include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev
@@ -45,43 +47,53 @@ end
 in(item::T, ia::UniqueVector{T}) where {T} = haskey(ia.lookup, item)
 in(item, ia::UniqueVector{T}) where {T} = in(convert(T, item), ia)
 
-findfirst(ia::UniqueVector{T}, item::T) where {T} =
-    get(ia.lookup, item, 0)
+findfirst(p::equalto{<:T}, ia::UniqueVector{T}) where {T} =
+    get(ia.lookup, p.x, 0)
 
-function findfirst!(ia::UniqueVector{T}, item::T) where {T}
-    rv = get!(ia.lookup, item) do
+function findfirst!(p::equalto{<:T}, ia::UniqueVector{T}) where {T}
+    rv = get!(ia.lookup, p.x) do
         # NOTE: does not provide any exception safety guarantee
-        push!(ia.items, item)
+        push!(ia.items, p.x)
         return length(ia.items)
     end
     @assert length(ia.items) == length(ia.lookup)
     return rv
 end
 
-findfirst(ia::UniqueVector{T}, item) where {T} =
-    findfirst(ia, convert(T, item))
+findfirst(p::equalto, ia::UniqueVector{T}) where {T} =
+    findfirst(equalto(convert(T, p.x)), ia)
 
-findfirst!(ia::UniqueVector{T}, item) where {T} =
-    findfirst!(ia, convert(T, item))
+findfirst!(p::equalto, ia::UniqueVector{T}) where {T} =
+    findfirst!(equalto(convert(T, p.x)), ia)
 
-findlast(ia::UniqueVector, item) =
-    findfirst(ia, item)
+findlast(p::equalto, ia::UniqueVector) =
+    findfirst(p, ia)
+
+@deprecate findfirst(ia::UniqueVector, item) findfirst(equalto(item), ia)
+
+@deprecate findfirst!(ia::UniqueVector, item) findfirst!(equalto(item), ia)
+
+@deprecate findlast(ia::UniqueVector, item) findlast(equalto(item), ia)
 
 indexin(a::AbstractArray, b::UniqueVector) =
-    [findfirst(b, elt) for elt in a]
+    [findfirst(equalto(elt), b) for elt in a]
 
 findin(a, b::UniqueVector) =
     [i for (i, ai) in enumerate(a) if ai ∈ b]
 
-function findnext(A::UniqueVector, v, i::Integer)
-    idx = findfirst(A, v)
+function findnext(p::equalto, A::UniqueVector, i::Integer)
+    idx = findfirst(p, A)
     idx >= i ? idx : 0
 end
 
-function findprev(A::UniqueVector, v, i::Integer)
-    idx = findfirst(A, v)
+@deprecate findnext(A::UniqueVector, v, i::Integer) findnext(equalto(v), A, i)
+
+function findprev(p::equalto, A::UniqueVector, i::Integer)
+    idx = findfirst(p, A)
     idx <= i ? idx : 0
 end
+
+@deprecate findprev(A::UniqueVector, v, i::Integer) findprev(equalto(v), A, i)
 
 function push!(ia::UniqueVector{T}, item::T) where {T}
     if item in ia
