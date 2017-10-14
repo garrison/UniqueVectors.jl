@@ -6,113 +6,113 @@ using Compat
 @test length(UniqueVector([1,5,6,3])) == 4
 @test_throws ArgumentError UniqueVector([1,3,5,6,3])
 
-ia = UniqueVector{String}()
+uv = UniqueVector{String}()
 
-@test isempty(ia)
-@test_throws ArgumentError pop!(ia)
-@test findfirst(equalto("cat"), ia) == 0
-@test findfirst!(equalto("cat"), ia) == 1
-@test !isempty(ia)
-@test "cat" in ia
-@test "dog" ∉ ia
-@test count(equalto("cat"), ia) == 1
-@test count(equalto("dog"), ia) == 0
-@test find(equalto("cat"), ia) == [1]
-@test find(equalto("dog"), ia) == Int[]
-@test findfirst!(equalto("dog"), ia) == 2
-@test findfirst!(equalto("cat"), ia) == 1
-@test findfirst!(equalto("mouse"), ia) == 3
-@test findfirst!(equalto("dog"), ia) == 2
-@test findfirst(equalto("cat"), ia) == 1
-@test findlast(equalto("cat"), ia) == 1
-@test findfirst(equalto("dog"), ia) == 2
-@test findfirst(equalto("mouse"), ia) == 3
-@test ia[1] == "cat"
-@test ia[2] == "dog"
-@test ia[3] == "mouse"
-@test ia[:] == ["cat", "dog", "mouse"]
-@test size(ia) == (3,)
-@test length(ia) == 3
-@test endof(ia) == 3
+@test isempty(uv)
+@test_throws ArgumentError pop!(uv)
+@test findfirst(equalto("cat"), uv) == 0
+@test findfirst!(equalto("cat"), uv) == 1
+@test !isempty(uv)
+@test "cat" in uv
+@test "dog" ∉ uv
+@test count(equalto("cat"), uv) == 1
+@test count(equalto("dog"), uv) == 0
+@test find(equalto("cat"), uv) == [1]
+@test find(equalto("dog"), uv) == Int[]
+@test findfirst!(equalto("dog"), uv) == 2
+@test findfirst!(equalto("cat"), uv) == 1
+@test findfirst!(equalto("mouse"), uv) == 3
+@test findfirst!(equalto("dog"), uv) == 2
+@test findfirst(equalto("cat"), uv) == 1
+@test findlast(equalto("cat"), uv) == 1
+@test findfirst(equalto("dog"), uv) == 2
+@test findfirst(equalto("mouse"), uv) == 3
+@test uv[1] == "cat"
+@test uv[2] == "dog"
+@test uv[3] == "mouse"
+@test uv[:] == ["cat", "dog", "mouse"]
+@test size(uv) == (3,)
+@test length(uv) == 3
+@test endof(uv) == 3
 
-ia2 = UniqueVector([1, 2, 3])
-@test findfirst(equalto(0x02), ia2) == 2
-@test findfirst!(equalto(0x02), ia2) == 2
-@test ia2 == UniqueVector(i for i in 1:3)
+uv2 = UniqueVector([1, 2, 3])
+@test findfirst(equalto(0x02), uv2) == 2
+@test findfirst!(equalto(0x02), uv2) == 2
+@test uv2 == UniqueVector(i for i in 1:3)
 for elt in [3,2,1]
-    @test pop!(ia2) == elt
+    @test pop!(uv2) == elt
 end
-@test isempty(ia2)
+@test isempty(uv2)
 
-ia2 = copy(ia)
-@test ia2 == ia
+uv2 = copy(uv)
+@test uv2 == uv
 
-@test empty!(ia) === ia
-@test isempty(ia)
-@test findfirst(equalto("cat"), ia) == 0
-@test findfirst!(equalto("horse"), ia) == 1
-@test_throws ArgumentError push!(ia, "horse")
-@test length(ia) == 1
-@test push!(ia, "human") === ia
-@test findfirst(equalto("human"), ia) == 2
-@test pop!(ia) == "human"
-@test length(ia) == 1
-@test ia[:] == ["horse"]
-@test findfirst(equalto("human"), ia) == 0
+@test empty!(uv) === uv
+@test isempty(uv)
+@test findfirst(equalto("cat"), uv) == 0
+@test findfirst!(equalto("horse"), uv) == 1
+@test_throws ArgumentError push!(uv, "horse")
+@test length(uv) == 1
+@test push!(uv, "human") === uv
+@test findfirst(equalto("human"), uv) == 2
+@test pop!(uv) == "human"
+@test length(uv) == 1
+@test uv[:] == ["horse"]
+@test findfirst(equalto("human"), uv) == 0
 
-@test ia2[:] == ["cat", "dog", "mouse"]
-@test findfirst(equalto("cat"), ia2) == 1
+@test uv2[:] == ["cat", "dog", "mouse"]
+@test findfirst(equalto("cat"), uv2) == 1
 
-let ia = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(ia)
+let uv = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(uv)
 
-    ia = swap!(ia, 2, 2)
+    uv = swap!(uv, 2, 2)
 
-    @test ia == original
-    @test_throws BoundsError swap!(ia, 5, 5)
+    @test uv == original
+    @test_throws BoundsError swap!(uv, 5, 5)
 
-    swap!(ia, 2, 3)
+    swap!(uv, 2, 3)
 
-    @test findfirst(equalto("mouse"), ia) == 2
+    @test findfirst(equalto("mouse"), uv) == 2
     @test findfirst(equalto("mouse"), original) == 3
 
-    @test findfirst(equalto("dog"), ia) == 3
+    @test findfirst(equalto("dog"), uv) == 3
     @test findfirst(equalto("dog"), original) == 2
 end
 
 @test UniqueVector([1,2,3,4]) == UniqueVector(1:4)
 
 # Test it works with `Any` datatype
-let ia3 = UniqueVector([1,"cat",2,"dog"])
-    @test eltype(ia3) == Any
-    @test findfirst(equalto(1), ia3) == 1
-    @test findlast(equalto(1), ia3) == 1
-    @test find(equalto(1), ia3) == [1]
-    @test count(equalto(1), ia3) == 1
-    @test findfirst!(equalto("dog"), ia3) == 4
-    @test findfirst!(equalto("horse"), ia3) == 5
+let uv3 = UniqueVector([1,"cat",2,"dog"])
+    @test eltype(uv3) == Any
+    @test findfirst(equalto(1), uv3) == 1
+    @test findlast(equalto(1), uv3) == 1
+    @test find(equalto(1), uv3) == [1]
+    @test count(equalto(1), uv3) == 1
+    @test findfirst!(equalto("dog"), uv3) == 4
+    @test findfirst!(equalto("horse"), uv3) == 5
 end
 
 # Test setindex!
-ia4 = UniqueVector(["cat", "dog", "mouse"])
-@test_throws BoundsError ia4[4] = "horse"
-ia4[2] = "horse"
-ia4[3] = "dog"
-@test ia4[:] == ["cat", "horse", "dog"]
-ia4[1] = "cat"
-@test_throws ArgumentError ia4[2] = "dog"
-push!(ia4, "mouse")
-@test ia4[:] == ["cat", "horse", "dog", "mouse"]
-@test ia4[1:2] == ["cat", "horse"]
+uv4 = UniqueVector(["cat", "dog", "mouse"])
+@test_throws BoundsError uv4[4] = "horse"
+uv4[2] = "horse"
+uv4[3] = "dog"
+@test uv4[:] == ["cat", "horse", "dog"]
+uv4[1] = "cat"
+@test_throws ArgumentError uv4[2] = "dog"
+push!(uv4, "mouse")
+@test uv4[:] == ["cat", "horse", "dog", "mouse"]
+@test uv4[1:2] == ["cat", "horse"]
 
-ia5 = UniqueVector{Float64}()
-push!(ia5, 3)
-@test ia5[:] == [3.0]
-ia5[1] = 4
-@test ia5[:] == [4.0]
-@test 4 ∈ ia5
-@test findfirst(equalto(4), ia5) == 1
-@test findlast(equalto(4), ia5) == 1
-@test find(equalto(4), ia5) == [1]
+uv5 = UniqueVector{Float64}()
+push!(uv5, 3)
+@test uv5[:] == [3.0]
+uv5[1] = 4
+@test uv5[:] == [4.0]
+@test 4 ∈ uv5
+@test findfirst(equalto(4), uv5) == 1
+@test findlast(equalto(4), uv5) == 1
+@test find(equalto(4), uv5) == [1]
 
 # Test indexin and findin
 @test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,0,1,6,5,2]

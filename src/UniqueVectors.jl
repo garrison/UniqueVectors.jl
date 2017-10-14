@@ -18,16 +18,16 @@ struct UniqueVector{T} <: AbstractUniqueVector{T}
 
     UniqueVector{T}() where {T} = new(T[], Dict{T,Int}())
     function UniqueVector{T}(items::Vector{T}) where {T}
-        ia = new(items, Dict{T,Int}())
-        sizehint!(ia.lookup, length(ia.items))
-        for (i, item) in enumerate(ia.items)
-            if item in ia
+        uv = new(items, Dict{T,Int}())
+        sizehint!(uv.lookup, length(uv.items))
+        for (i, item) in enumerate(uv.items)
+            if item in uv
                 throw(ArgumentError("cannot construct UniqueVector with duplicate items"))
             end
-            ia.lookup[item] = i
+            uv.lookup[item] = i
         end
-        @assert length(ia.items) == length(ia.lookup)
-        return ia
+        @assert length(uv.items) == length(uv.lookup)
+        return uv
     end
 end
 
@@ -37,43 +37,43 @@ UniqueVector(items) = UniqueVector(collect(items))
 
 @delegate UniqueVector.items [ length, size, isempty, getindex, start, done, next ]
 
-function empty!(ia::UniqueVector)
+function empty!(uv::UniqueVector)
     # NOTE: does not provide any exception safety guarantee
-    empty!(ia.items)
-    empty!(ia.lookup)
-    return ia
+    empty!(uv.items)
+    empty!(uv.lookup)
+    return uv
 end
 
-in(item::T, ia::UniqueVector{T}) where {T} = haskey(ia.lookup, item)
-in(item, ia::UniqueVector{T}) where {T} = in(convert(T, item), ia)
+in(item::T, uv::UniqueVector{T}) where {T} = haskey(uv.lookup, item)
+in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
-findfirst(p::equalto{<:T}, ia::UniqueVector{T}) where {T} =
-    get(ia.lookup, p.x, 0)
+findfirst(p::equalto{<:T}, uv::UniqueVector{T}) where {T} =
+    get(uv.lookup, p.x, 0)
 
-function findfirst!(p::equalto{<:T}, ia::UniqueVector{T}) where {T}
-    rv = get!(ia.lookup, p.x) do
+function findfirst!(p::equalto{<:T}, uv::UniqueVector{T}) where {T}
+    rv = get!(uv.lookup, p.x) do
         # NOTE: does not provide any exception safety guarantee
-        push!(ia.items, p.x)
-        return length(ia.items)
+        push!(uv.items, p.x)
+        return length(uv.items)
     end
-    @assert length(ia.items) == length(ia.lookup)
+    @assert length(uv.items) == length(uv.lookup)
     return rv
 end
 
-findfirst(p::equalto, ia::UniqueVector{T}) where {T} =
-    findfirst(equalto(convert(T, p.x)), ia)
+findfirst(p::equalto, uv::UniqueVector{T}) where {T} =
+    findfirst(equalto(convert(T, p.x)), uv)
 
-findfirst!(p::equalto, ia::UniqueVector{T}) where {T} =
-    findfirst!(equalto(convert(T, p.x)), ia)
+findfirst!(p::equalto, uv::UniqueVector{T}) where {T} =
+    findfirst!(equalto(convert(T, p.x)), uv)
 
-findlast(p::equalto, ia::UniqueVector) =
-    findfirst(p, ia)
+findlast(p::equalto, uv::UniqueVector) =
+    findfirst(p, uv)
 
-@deprecate findfirst(ia::UniqueVector, item) findfirst(equalto(item), ia)
+@deprecate findfirst(uv::UniqueVector, item) findfirst(equalto(item), uv)
 
-@deprecate findfirst!(ia::UniqueVector, item) findfirst!(equalto(item), ia)
+@deprecate findfirst!(uv::UniqueVector, item) findfirst!(equalto(item), uv)
 
-@deprecate findlast(ia::UniqueVector, item) findlast(equalto(item), ia)
+@deprecate findlast(uv::UniqueVector, item) findlast(equalto(item), uv)
 
 indexin(a::AbstractArray, b::UniqueVector) =
     [findfirst(equalto(elt), b) for elt in a]
@@ -103,64 +103,64 @@ end
 count(p::equalto, uv::UniqueVector) =
     Int(p.x ∈ uv)
 
-function push!(ia::UniqueVector{T}, item::T) where {T}
-    if item in ia
+function push!(uv::UniqueVector{T}, item::T) where {T}
+    if item in uv
         throw(ArgumentError("cannot add duplicate item to UniqueVector"))
     end
     # NOTE: does not provide any exception safety guarantee
-    push!(ia.items, item)
-    ia.lookup[item] = length(ia)
-    @assert length(ia.items) == length(ia.lookup)
-    return ia
+    push!(uv.items, item)
+    uv.lookup[item] = length(uv)
+    @assert length(uv.items) == length(uv.lookup)
+    return uv
 end
 
-push!(ia::UniqueVector{T}, item) where {T} =
-    push!(ia, convert(T, item))
+push!(uv::UniqueVector{T}, item) where {T} =
+    push!(uv, convert(T, item))
 
-function pop!(ia::UniqueVector)
-    if isempty(ia.items)
+function pop!(uv::UniqueVector)
+    if isempty(uv.items)
         throw(ArgumentError("array must be non-empty"))
     end
     # NOTE: does not provide any exception safety guarantee
-    delete!(ia.lookup, ia.items[end])
-    rv = pop!(ia.items)
-    @assert length(ia.items) == length(ia.lookup)
+    delete!(uv.lookup, uv.items[end])
+    rv = pop!(uv.items)
+    @assert length(uv.items) == length(uv.lookup)
     return rv
 end
 
-function setindex!(ia::UniqueVector{T}, item::T, idx::Integer) where {T}
-    checkbounds(ia, idx)
-    ia[idx] == item && return ia # nothing to do
-    item ∉ ia || throw(ArgumentError("cannot set an element that exists elsewhere in UniqueVector"))
+function setindex!(uv::UniqueVector{T}, item::T, idx::Integer) where {T}
+    checkbounds(uv, idx)
+    uv[idx] == item && return uv # nothing to do
+    item ∉ uv || throw(ArgumentError("cannot set an element that exists elsewhere in UniqueVector"))
     # NOTE: does not provide any exception safety guarantee
-    delete!(ia.lookup, ia.items[idx])
-    ia.items[idx] = item
-    ia.lookup[item] = idx
-    @assert length(ia.items) == length(ia.lookup)
-    return ia
+    delete!(uv.lookup, uv.items[idx])
+    uv.items[idx] = item
+    uv.lookup[item] = idx
+    @assert length(uv.items) == length(uv.lookup)
+    return uv
 end
 
-setindex!(ia::UniqueVector{T}, item, idx::Integer) where {T} =
-    setindex!(ia, convert(T, item), idx)
+setindex!(uv::UniqueVector{T}, item, idx::Integer) where {T} =
+    setindex!(uv, convert(T, item), idx)
 
-copy(ia::UniqueVector) = UniqueVector(copy(ia.items))
+copy(uv::UniqueVector) = UniqueVector(copy(uv.items))
 
-"`swap!(ia::UniqueVector, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `UniqueVector`"
-function swap!(ia::UniqueVector, to::Int, from::Int)
+"`swap!(uv::UniqueVector, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `UniqueVector`"
+function swap!(uv::UniqueVector, to::Int, from::Int)
     if to == from
-        checkbounds(ia,to)
-        return ia
+        checkbounds(uv,to)
+        return uv
     end
-    previous_id  = ia[to]
-    future_id    = ia[from]
+    previous_id  = uv[to]
+    future_id    = uv[from]
 
-    ia.items[to]   = future_id
-    ia.items[from] = previous_id
+    uv.items[to]   = future_id
+    uv.items[from] = previous_id
 
-    ia.lookup[previous_id] = from
-    ia.lookup[future_id]   = to
+    uv.lookup[previous_id] = from
+    uv.lookup[future_id]   = to
 
-    return ia
+    return uv
 end
 
 export AbstractUniqueVector, UniqueVector, findfirst!, swap!
