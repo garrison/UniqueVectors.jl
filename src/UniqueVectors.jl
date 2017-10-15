@@ -69,9 +69,13 @@ findfirst!(p::equalto, uv::UniqueVector{T}) where {T} =
 findlast(p::equalto, uv::UniqueVector) =
     findfirst(p, uv)
 
-@deprecate findfirst(uv::UniqueVector, item) findfirst(equalto(item), uv)
-
-@deprecate findfirst!(uv::UniqueVector, item) findfirst!(equalto(item), uv)
+if VERSION >= v"0.7.0-DEV"
+    @deprecate findfirst(uv::UniqueVector, item) findfirst(equalto(item), uv)
+    @deprecate findfirst!(uv::UniqueVector, item) findfirst!(equalto(item), uv)
+else
+    findfirst(uv::UniqueVector, item) = findfirst(equalto(item), uv)
+    findfirst!(uv::UniqueVector, item) = findfirst!(equalto(item), uv)
+end
 
 @deprecate findlast(uv::UniqueVector, item) findlast(equalto(item), uv)
 
