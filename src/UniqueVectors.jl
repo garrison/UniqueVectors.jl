@@ -35,6 +35,8 @@ UniqueVector(items::Vector{T}) where {T} = UniqueVector{T}(items)
 UniqueVector(items::AbstractVector{T}) where {T} = UniqueVector{T}(Vector{T}(items))
 UniqueVector(items) = UniqueVector(collect(items))
 
+copy(uv::UniqueVector) = UniqueVector(copy(uv.items))
+
 @delegate UniqueVector.items [ length, size, isempty, getindex, start, done, next ]
 
 function empty!(uv::UniqueVector)
@@ -146,8 +148,6 @@ end
 
 setindex!(uv::UniqueVector{T}, item, idx::Integer) where {T} =
     setindex!(uv, convert(T, item), idx)
-
-copy(uv::UniqueVector) = UniqueVector(copy(uv.items))
 
 "`swap!(uv::UniqueVector, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `UniqueVector`"
 function swap!(uv::UniqueVector, to::Int, from::Int)
