@@ -66,7 +66,7 @@ findfirst(p::equalto, uv::UniqueVector{T}) where {T} =
 findfirst!(p::equalto, uv::UniqueVector{T}) where {T} =
     findfirst!(equalto(convert(T, p.x)), uv)
 
-findlast(p::equalto, uv::UniqueVector) =
+findlast(p::equalto, uv::AbstractUniqueVector) =
     findfirst(p, uv)
 
 if VERSION >= v"0.7.0-DEV"
@@ -79,32 +79,32 @@ end
 
 @deprecate findlast(uv::UniqueVector, item) findlast(equalto(item), uv)
 
-indexin(a::AbstractArray, b::UniqueVector) =
-    [findfirst(equalto(elt), b) for elt in a]
+indexin(a::AbstractArray, b::AbstractUniqueVector) =
+    [findlast(equalto(elt), b) for elt in a]
 
-findin(a, b::UniqueVector) =
+findin(a, b::AbstractUniqueVector) =
     [i for (i, ai) in enumerate(a) if ai ∈ b]
 
-function findnext(p::equalto, A::UniqueVector, i::Integer)
+function findnext(p::equalto, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
     idx >= i ? idx : 0
 end
 
 @deprecate findnext(A::UniqueVector, v, i::Integer) findnext(equalto(v), A, i)
 
-function findprev(p::equalto, A::UniqueVector, i::Integer)
+function findprev(p::equalto, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
     idx <= i ? idx : 0
 end
 
 @deprecate findprev(A::UniqueVector, v, i::Integer) findprev(equalto(v), A, i)
 
-function find(p::equalto, uv::UniqueVector)
+function find(p::equalto, uv::AbstractUniqueVector)
     idx = findfirst(p, uv)
     (idx == 0) ? Int[] : Int[idx]
 end
 
-count(p::equalto, uv::UniqueVector) =
+count(p::equalto, uv::AbstractUniqueVector) =
     Int(p.x ∈ uv)
 
 function push!(uv::UniqueVector{T}, item::T) where {T}
