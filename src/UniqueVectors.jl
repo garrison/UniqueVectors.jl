@@ -51,8 +51,10 @@ end
 in(item::T, uv::UniqueVector{T}) where {T} = haskey(uv.lookup, item)
 in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
+nothing_sentinel = 0
+
 findfirst(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T} =
-    get(uv.lookup, p.x, 0)
+    get(uv.lookup, p.x, nothing_sentinel)
 
 function findfirst!(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T}
     rv = get!(uv.lookup, p.x) do
@@ -91,21 +93,21 @@ findin(a, b::AbstractUniqueVector) =
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
-    idx >= i ? idx : 0
+    idx >= i ? idx : nothing_sentinel
 end
 
 @deprecate findnext(A::UniqueVector, v, i::Integer) findnext(isequal(v), A, i)
 
 function findprev(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
-    idx <= i ? idx : 0
+    idx <= i ? idx : nothing_sentinel
 end
 
 @deprecate findprev(A::UniqueVector, v, i::Integer) findprev(isequal(v), A, i)
 
 function find(p::EqualTo, uv::AbstractUniqueVector)
     idx = findfirst(p, uv)
-    (idx == 0) ? Int[] : Int[idx]
+    (idx == nothing_sentinel) ? Int[] : Int[idx]
 end
 
 count(p::EqualTo, uv::AbstractUniqueVector) =
