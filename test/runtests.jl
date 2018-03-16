@@ -33,7 +33,7 @@ uv = UniqueVector{String}()
 @test uv[:] == ["cat", "dog", "mouse"]
 @test size(uv) == (3,)
 @test length(uv) == 3
-@test endof(uv) == 3
+@test lastindex(uv) == 3
 
 uv2 = UniqueVector([1, 2, 3])
 @test findfirst(isequal(0x02), uv2) == 2
