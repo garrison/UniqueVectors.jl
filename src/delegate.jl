@@ -16,13 +16,13 @@ macro delegate(source, targets)
     fieldname = unquote(source.args[2])
     funcnames = targets.args
     n = length(funcnames)
-    fdefs = Vector{Any}(n)
+    fdefs = Any[]
     for i in 1:n
         funcname = esc(funcnames[i])
-        fdefs[i] = quote
-                     ($funcname)(a::($typename), args...) =
-                       ($funcname)(a.$fieldname, args...)
-                   end
+        push!(fdefs, quote
+            ($funcname)(a::($typename), args...) =
+            ($funcname)(a.$fieldname, args...)
+        end)
     end
     return Expr(:block, fdefs...)
 end
