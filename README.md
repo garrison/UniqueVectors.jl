@@ -2,6 +2,9 @@
 
 [![Build Status](https://travis-ci.org/garrison/UniqueVectors.jl.svg?branch=master)](https://travis-ci.org/garrison/UniqueVectors.jl)
 [![Coverage Status](https://coveralls.io/repos/garrison/UniqueVectors.jl/badge.svg?branch=master)](https://coveralls.io/r/garrison/UniqueVectors.jl?branch=master)
+[![UniqueVectors](http://pkg.julialang.org/badges/UniqueVectors_0.6.svg)](http://pkg.julialang.org/detail/UniqueVectors)
+[![UniqueVectors](http://pkg.julialang.org/badges/UniqueVectors_0.7.svg)](http://pkg.julialang.org/detail/UniqueVectors)
+
 
     julia> Pkg.add("UniqueVectors")
 
