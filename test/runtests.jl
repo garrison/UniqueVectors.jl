@@ -36,6 +36,7 @@ uv = UniqueVector{String}()
 @test lastindex(uv) == 3
 
 uv2 = UniqueVector([1, 2, 3])
+@test eltype(uv2) == Int
 @test findfirst(isequal(0x02), uv2) == 2
 @test findfirst!(isequal(0x02), uv2) == 2
 @test uv2 == UniqueVector(i for i in 1:3)
