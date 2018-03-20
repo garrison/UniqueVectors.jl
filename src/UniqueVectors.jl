@@ -8,6 +8,9 @@ include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev, find, count
 
+Fix2 = isdefined(Compat, :Fix2) ? Compat.Fix2 : Base.Fix2
+EqualTo = Fix2{typeof(isequal)}
+
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
 Base.@deprecate_binding UniqueVectorError ArgumentError
@@ -49,10 +52,12 @@ end
 in(item::T, uv::UniqueVector{T}) where {T} = haskey(uv.lookup, item)
 in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
-findfirst(p::equalto{<:T}, uv::UniqueVector{T}) where {T} =
-    get(uv.lookup, p.x, 0)
+nothing_sentinel = 0
 
-function findfirst!(p::equalto{<:T}, uv::UniqueVector{T}) where {T}
+findfirst(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T} =
+    get(uv.lookup, p.x, nothing_sentinel)
+
+function findfirst!(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T}
     rv = get!(uv.lookup, p.x) do
         # NOTE: does not provide any exception safety guarantee
         push!(uv.items, p.x)
@@ -62,51 +67,51 @@ function findfirst!(p::equalto{<:T}, uv::UniqueVector{T}) where {T}
     return rv
 end
 
-findfirst(p::equalto, uv::UniqueVector{T}) where {T} =
-    findfirst(equalto(convert(T, p.x)), uv)
+findfirst(p::EqualTo, uv::UniqueVector{T}) where {T} =
+    findfirst(isequal(convert(T, p.x)), uv)
 
-findfirst!(p::equalto, uv::UniqueVector{T}) where {T} =
-    findfirst!(equalto(convert(T, p.x)), uv)
+findfirst!(p::EqualTo, uv::UniqueVector{T}) where {T} =
+    findfirst!(isequal(convert(T, p.x)), uv)
 
-findlast(p::equalto, uv::AbstractUniqueVector) =
+findlast(p::EqualTo, uv::AbstractUniqueVector) =
     findfirst(p, uv)
 
 if VERSION >= v"0.7.0-DEV"
-    @deprecate findfirst(uv::UniqueVector, item) findfirst(equalto(item), uv)
-    @deprecate findfirst!(uv::UniqueVector, item) findfirst!(equalto(item), uv)
+    @deprecate findfirst(uv::UniqueVector, item) findfirst(isequal(item), uv)
+    @deprecate findfirst!(uv::UniqueVector, item) findfirst!(isequal(item), uv)
 else
-    findfirst(uv::UniqueVector, item) = findfirst(equalto(item), uv)
-    findfirst!(uv::UniqueVector, item) = findfirst!(equalto(item), uv)
+    findfirst(uv::UniqueVector, item) = findfirst(isequal(item), uv)
+    findfirst!(uv::UniqueVector, item) = findfirst!(isequal(item), uv)
 end
 
-@deprecate findlast(uv::UniqueVector, item) findlast(equalto(item), uv)
+@deprecate findlast(uv::UniqueVector, item) findlast(isequal(item), uv)
 
 indexin(a::AbstractArray, b::AbstractUniqueVector) =
-    [findlast(equalto(elt), b) for elt in a]
+    [findlast(isequal(elt), b) for elt in a]
 
 findin(a, b::AbstractUniqueVector) =
     [i for (i, ai) in enumerate(a) if ai ∈ b]
 
-function findnext(p::equalto, A::AbstractUniqueVector, i::Integer)
+function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
-    idx >= i ? idx : 0
+    idx >= i ? idx : nothing_sentinel
 end
 
-@deprecate findnext(A::UniqueVector, v, i::Integer) findnext(equalto(v), A, i)
+@deprecate findnext(A::UniqueVector, v, i::Integer) findnext(isequal(v), A, i)
 
-function findprev(p::equalto, A::AbstractUniqueVector, i::Integer)
+function findprev(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
-    idx <= i ? idx : 0
+    idx <= i ? idx : nothing_sentinel
 end
 
-@deprecate findprev(A::UniqueVector, v, i::Integer) findprev(equalto(v), A, i)
+@deprecate findprev(A::UniqueVector, v, i::Integer) findprev(isequal(v), A, i)
 
-function find(p::equalto, uv::AbstractUniqueVector)
+function find(p::EqualTo, uv::AbstractUniqueVector)
     idx = findfirst(p, uv)
-    (idx == 0) ? Int[] : Int[idx]
+    (idx == nothing_sentinel) ? Int[] : Int[idx]
 end
 
-count(p::equalto, uv::AbstractUniqueVector) =
+count(p::EqualTo, uv::AbstractUniqueVector) =
     Int(p.x ∈ uv)
 
 function push!(uv::UniqueVector{T}, item::T) where {T}
