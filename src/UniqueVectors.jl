@@ -8,8 +8,7 @@ include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev, find, count
 
-Fix2 = isdefined(Compat, :Fix2) ? Compat.Fix2 : Base.Fix2
-EqualTo = Fix2{typeof(isequal)}
+EqualTo = Compat.Fix2{typeof(isequal)}
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
