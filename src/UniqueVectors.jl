@@ -52,9 +52,9 @@ in(item::T, uv::UniqueVector{T}) where {T} = haskey(uv.lookup, item)
 in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
 @static if VERSION >= v"0.7.0-DEV.3272"
-    nothing_sentinel = nothing
+    const nothing_sentinel = nothing
 else
-    nothing_sentinel = 0
+    const nothing_sentinel = 0
 end
 
 findfirst(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T} =
