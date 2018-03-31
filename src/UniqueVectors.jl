@@ -109,7 +109,7 @@ end
 
 @deprecate findprev(A::UniqueVector, v, i::Integer) findprev(isequal(v), A, i)
 
-function find(p::EqualTo, uv::AbstractUniqueVector)
+function Compat.findall(p::EqualTo, uv::AbstractUniqueVector)
     idx = findfirst(p, uv)
     (idx == nothing_sentinel) ? Int[] : Int[idx]
 end
