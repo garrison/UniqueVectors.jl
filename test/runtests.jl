@@ -19,8 +19,8 @@ uv = UniqueVector{String}()
 @test "dog" ∉ uv
 @test count(isequal("cat"), uv) == 1
 @test count(isequal("dog"), uv) == 0
-@test find(isequal("cat"), uv) == [1]
-@test find(isequal("dog"), uv) == Int[]
+@test findall(isequal("cat"), uv) == [1]
+@test findall(isequal("dog"), uv) == Int[]
 @test findfirst!(isequal("dog"), uv) == 2
 @test findfirst!(isequal("cat"), uv) == 1
 @test findfirst!(isequal("mouse"), uv) == 3
@@ -91,7 +91,7 @@ let uv3 = UniqueVector([1,"cat",2,"dog"])
     @test eltype(uv3) == Any
     @test findfirst(isequal(1), uv3) == 1
     @test findlast(isequal(1), uv3) == 1
-    @test find(isequal(1), uv3) == [1]
+    @test findall(isequal(1), uv3) == [1]
     @test count(isequal(1), uv3) == 1
     @test findfirst!(isequal("dog"), uv3) == 4
     @test findfirst!(isequal("horse"), uv3) == 5
@@ -117,7 +117,7 @@ uv5[1] = 4
 @test 4 ∈ uv5
 @test findfirst(isequal(4), uv5) == 1
 @test findlast(isequal(4), uv5) == 1
-@test find(isequal(4), uv5) == [1]
+@test findall(isequal(4), uv5) == [1]
 
 # Test indexin and findin
 @test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,nothing_sentinel,1,6,5,2]
