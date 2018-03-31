@@ -13,7 +13,7 @@
 	julia> using UniqueVectors
 
 	julia> ia = UniqueVector(["cat", "dog", "mouse"])
-	3-element UniqueVector{String}:
+	3-element UniqueVectors.UniqueVector{String}:
 	 "cat"
 	 "dog"
 	 "mouse"
@@ -21,23 +21,23 @@
 	julia> ia[1]
 	"cat"
 
-	julia> findfirst(equalto("dog"), ia)         # executes quickly via a dictionary lookup, not sequential search
+	julia> findfirst(isequal("dog"), ia)         # executes quickly via a dictionary lookup, not sequential search
 	2
 
-(Note that on julia 0.6, one must specify `using Compat` to bring `equalto` into the current namespace.)
+(Note that on julia 0.6, one must specify `using Compat` to bring `isequal` into the current namespace.)
 
 As might be expected, `UniqueVector` supports many of the usual methods for `Vector`, but all operations enforce the condition that each element of the array must be unique.  The mutating methods `push!`, `pop!`, and `empty!` are implemented as well, as these operations keep constant the indices of existing elements in the array, allowing the dictionary to be updated efficiently.
 
 In addition, `UniqueVector` implements a mutating `findfirst!` method, which returns the index of an element if it exists in the array, or otherwise appends the element and returns its new index:
 
-    julia> findfirst!(equalto("cat"), ia)
+    julia> findfirst!(isequal("cat"), ia)
     1
 
-    julia> findfirst!(equalto("horse"), ia)
+    julia> findfirst!(isequal("horse"), ia)
 	4
 
 	julia> ia
-	4-element UniqueVector{ASCIIString}:
+	4-element UniqueVectors.UniqueVector{String}:
 	 "cat"
 	 "dog"
 	 "mouse"
