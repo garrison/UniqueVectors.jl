@@ -51,7 +51,11 @@ end
 in(item::T, uv::UniqueVector{T}) where {T} = haskey(uv.lookup, item)
 in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
-nothing_sentinel = 0
+@static if VERSION >= v"0.7.0-DEV.3272"
+    nothing_sentinel = nothing
+else
+    nothing_sentinel = 0
+end
 
 findfirst(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T} =
     get(uv.lookup, p.x, nothing_sentinel)

@@ -2,6 +2,7 @@ using UniqueVectors
 using Compat.Test
 
 using Compat
+import UniqueVectors: nothing_sentinel
 
 @test length(UniqueVector([1,5,6,3])) == 4
 @test_throws ArgumentError UniqueVector([1,3,5,6,3])
@@ -10,7 +11,8 @@ uv = UniqueVector{String}()
 
 @test isempty(uv)
 @test_throws ArgumentError pop!(uv)
-@test findfirst(isequal("cat"), uv) == 0
+@test findfirst(isequal("cat"), uv) == nothing_sentinel
+@test Compat.findfirst(isequal("cat"), uv) == nothing
 @test findfirst!(isequal("cat"), uv) == 1
 @test !isempty(uv)
 @test "cat" in uv
@@ -50,7 +52,8 @@ uv2 = copy(uv)
 
 @test empty!(uv) === uv
 @test isempty(uv)
-@test findfirst(isequal("cat"), uv) == 0
+@test findfirst(isequal("cat"), uv) == nothing_sentinel
+@test Compat.findfirst(isequal("cat"), uv) == nothing
 @test findfirst!(isequal("horse"), uv) == 1
 @test_throws ArgumentError push!(uv, "horse")
 @test length(uv) == 1
@@ -59,7 +62,8 @@ uv2 = copy(uv)
 @test pop!(uv) == "human"
 @test length(uv) == 1
 @test uv[:] == ["horse"]
-@test findfirst(isequal("human"), uv) == 0
+@test findfirst(isequal("human"), uv) == nothing_sentinel
+@test Compat.findlast(isequal("human"), uv) == nothing
 
 @test uv2[:] == ["cat", "dog", "mouse"]
 @test findfirst(isequal("cat"), uv2) == 1
@@ -116,15 +120,19 @@ uv5[1] = 4
 @test find(isequal(4), uv5) == [1]
 
 # Test indexin and findin
-@test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,0,1,6,5,2]
+@test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,nothing_sentinel,1,6,5,2]
+@test Compat.indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,nothing,1,6,5,2]
 @test findin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [1,3,4,5,6]
 
 # Test findnext and findprev
 @test findnext(isequal(7), UniqueVector([3,5,7,9]), 1) == 3
 @test findnext(isequal(7), UniqueVector([3,5,7,9]), 2) == 3
 @test findnext(isequal(7), UniqueVector([3,5,7,9]), 3) == 3
-@test findnext(isequal(7), UniqueVector([3,5,7,9]), 4) == 0
-@test findprev(isequal(7), UniqueVector([3,5,7,9]), 1) == 0
-@test findprev(isequal(7), UniqueVector([3,5,7,9]), 2) == 0
+@test findnext(isequal(7), UniqueVector([3,5,7,9]), 4) == nothing_sentinel
+@test Compat.findnext(isequal(7), UniqueVector([3,5,7,9]), 4) == nothing
+@test findprev(isequal(7), UniqueVector([3,5,7,9]), 1) == nothing_sentinel
+@test Compat.findprev(isequal(7), UniqueVector([3,5,7,9]), 1) == nothing
+@test findprev(isequal(7), UniqueVector([3,5,7,9]), 2) == nothing_sentinel
+@test Compat.findprev(isequal(7), UniqueVector([3,5,7,9]), 2) == nothing
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 3) == 3
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 4) == 3
