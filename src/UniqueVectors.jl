@@ -2,13 +2,11 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev, findall, count, find
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, indexin, findnext, findprev, findall, count
 
 EqualTo = Base.Fix2{typeof(isequal)}
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
-
-Base.@deprecate_binding UniqueVectorError ArgumentError
 
 struct UniqueVector{T} <: AbstractUniqueVector{T}
     items::Vector{T}
@@ -35,7 +33,7 @@ UniqueVector(items) = UniqueVector(collect(items))
 
 copy(uv::UniqueVector) = UniqueVector(copy(uv.items))
 
-@delegate UniqueVector.items [ length, size, isempty, getindex, start, done, next ]
+@delegate UniqueVector.items [ length, size, isempty, getindex, iterate ]
 
 function empty!(uv::UniqueVector)
     # NOTE: does not provide any exception safety guarantee
@@ -69,29 +67,25 @@ findfirst!(p::EqualTo, uv::UniqueVector{T}) where {T} =
 findlast(p::EqualTo, uv::AbstractUniqueVector) =
     findfirst(p, uv)
 
-@deprecate findfirst(uv::UniqueVector, item) findfirst(isequal(item), uv)
-@deprecate findfirst!(uv::UniqueVector, item) findfirst!(isequal(item), uv)
-@deprecate findlast(uv::UniqueVector, item) findlast(isequal(item), uv)
-
 indexin(a::AbstractArray, b::AbstractUniqueVector) =
     [findlast(isequal(elt), b) for elt in a]
 
-findin(a, b::AbstractUniqueVector) =
-    [i for (i, ai) in enumerate(a) if ai ∈ b]
+@static if VERSION < v"1.0.0-"
+    import Base: findin
+
+    findin(a, b::AbstractUniqueVector) =
+        [i for (i, ai) in enumerate(a) if ai ∈ b]
+end
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
     idx >= i ? idx : nothing
 end
 
-@deprecate findnext(A::UniqueVector, v, i::Integer) findnext(isequal(v), A, i)
-
 function findprev(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
     idx <= i ? idx : nothing
 end
-
-@deprecate findprev(A::UniqueVector, v, i::Integer) findprev(isequal(v), A, i)
 
 function findall(p::EqualTo, uv::AbstractUniqueVector)
     idx = findfirst(p, uv)
@@ -157,6 +151,17 @@ function swap!(uv::UniqueVector, to::Int, from::Int)
     uv.lookup[future_id]   = to
 
     return uv
+end
+
+@static if VERSION < v"1.0.0-"
+    Base.@deprecate_binding UniqueVectorError ArgumentError
+
+    @deprecate findfirst(uv::UniqueVector, item) findfirst(isequal(item), uv)
+    @deprecate findfirst!(uv::UniqueVector, item) findfirst!(isequal(item), uv)
+    @deprecate findlast(uv::UniqueVector, item) findlast(isequal(item), uv)
+
+    @deprecate findnext(A::UniqueVector, v, i::Integer) findnext(isequal(v), A, i)
+    @deprecate findprev(A::UniqueVector, v, i::Integer) findprev(isequal(v), A, i)
 end
 
 export AbstractUniqueVector, UniqueVector, findfirst!, swap!
