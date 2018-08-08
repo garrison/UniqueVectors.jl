@@ -6,7 +6,7 @@
 [![UniqueVectors](http://pkg.julialang.org/badges/UniqueVectors_0.7.svg)](http://pkg.julialang.org/detail/UniqueVectors)
 
 
-    julia> Pkg.add("UniqueVectors")
+    julia> import Pkg; Pkg.add("UniqueVectors")
 
 `UniqueVector` is a data structure acts like a `Vector` of unique elements, but also maintains a dictionary that is updated in sync with the vector, which allows for quick lookup of the index of any element:
 
