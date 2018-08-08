@@ -1,14 +1,10 @@
-VERSION < v"0.7.0-beta2.199" && __precompile__()
-
 module UniqueVectors
-
-using Compat
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev, find, count
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, start, done, next, empty!, push!, pop!, setindex!, indexin, findin, findnext, findprev, findall, count, find
 
-EqualTo = Compat.Fix2{typeof(isequal)}
+EqualTo = Base.Fix2{typeof(isequal)}
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
@@ -51,14 +47,8 @@ end
 in(item::T, uv::UniqueVector{T}) where {T} = haskey(uv.lookup, item)
 in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
-@static if VERSION >= v"0.7.0-DEV.3272"
-    const nothing_sentinel = nothing
-else
-    const nothing_sentinel = 0
-end
-
 findfirst(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T} =
-    get(uv.lookup, p.x, nothing_sentinel)
+    get(uv.lookup, p.x, nothing)
 
 function findfirst!(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T}
     rv = get!(uv.lookup, p.x) do
@@ -79,14 +69,8 @@ findfirst!(p::EqualTo, uv::UniqueVector{T}) where {T} =
 findlast(p::EqualTo, uv::AbstractUniqueVector) =
     findfirst(p, uv)
 
-if VERSION >= v"0.7.0-DEV"
-    @deprecate findfirst(uv::UniqueVector, item) findfirst(isequal(item), uv)
-    @deprecate findfirst!(uv::UniqueVector, item) findfirst!(isequal(item), uv)
-else
-    findfirst(uv::UniqueVector, item) = findfirst(isequal(item), uv)
-    findfirst!(uv::UniqueVector, item) = findfirst!(isequal(item), uv)
-end
-
+@deprecate findfirst(uv::UniqueVector, item) findfirst(isequal(item), uv)
+@deprecate findfirst!(uv::UniqueVector, item) findfirst!(isequal(item), uv)
 @deprecate findlast(uv::UniqueVector, item) findlast(isequal(item), uv)
 
 indexin(a::AbstractArray, b::AbstractUniqueVector) =
@@ -97,21 +81,21 @@ findin(a, b::AbstractUniqueVector) =
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
-    idx >= i ? idx : nothing_sentinel
+    idx >= i ? idx : nothing
 end
 
 @deprecate findnext(A::UniqueVector, v, i::Integer) findnext(isequal(v), A, i)
 
 function findprev(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
-    idx <= i ? idx : nothing_sentinel
+    idx <= i ? idx : nothing
 end
 
 @deprecate findprev(A::UniqueVector, v, i::Integer) findprev(isequal(v), A, i)
 
-function Compat.findall(p::EqualTo, uv::AbstractUniqueVector)
+function findall(p::EqualTo, uv::AbstractUniqueVector)
     idx = findfirst(p, uv)
-    (idx == nothing_sentinel) ? Int[] : Int[idx]
+    (idx == nothing) ? Int[] : Int[idx]
 end
 
 count(p::EqualTo, uv::AbstractUniqueVector) =
