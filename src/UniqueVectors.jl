@@ -70,12 +70,11 @@ findlast(p::EqualTo, uv::AbstractUniqueVector) =
 indexin(a::AbstractArray, b::AbstractUniqueVector) =
     [findlast(isequal(elt), b) for elt in a]
 
-@static if VERSION < v"1.0.0-"
-    import Base: findin
-
-    findin(a, b::AbstractUniqueVector) =
-        [i for (i, ai) in enumerate(a) if ai ∈ b]
-end
+# These methods are identical, but both must be specified to prevent ambiguity.
+findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector} where T, a::Union{Tuple, AbstractArray}) =
+    [i for (i, ai) in enumerate(a) if p(ai)]
+findall(p::Base.Fix2{typeof(!in),<:AbstractUniqueVector} where T, a::Union{Tuple, AbstractArray}) =
+    [i for (i, ai) in enumerate(a) if p(ai)]
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
