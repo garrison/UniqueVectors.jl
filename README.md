@@ -8,7 +8,7 @@
 
     julia> import Pkg; Pkg.add("UniqueVectors")
 
-`UniqueVector` is a data structure acts like a `Vector` of unique elements, but also maintains a dictionary that is updated in sync with the vector, which allows for quick lookup of the index of any element:
+`UniqueVector` is a data structure acts like a `Vector` of unique elements, but also maintains a dictionary that is updated in sync with the vector, which allows for quick `O(1)` lookup of the index of any element:
 
 	julia> using UniqueVectors
 
@@ -24,7 +24,7 @@
 	julia> findfirst(isequal("dog"), uv)         # executes quickly via a dictionary lookup, not sequential search
 	2
 
-As might be expected, `UniqueVector` supports many of the usual methods for `Vector`, but all operations enforce the condition that each element of the array must be unique.  The mutating methods `push!`, `pop!`, and `empty!` are implemented as well, as these operations keep constant the indices of existing elements in the array, allowing the dictionary to be updated efficiently.
+As might be expected, `UniqueVector` supports many of the usual methods for `Vector`, but all operations enforce the condition that each element of the array must be unique (as defined by `isequal`).  The mutating methods `push!`, `pop!`, and `empty!` are implemented as well, as these operations keep constant the indices of existing elements in the array, allowing the dictionary to be updated efficiently.
 
 In addition, `UniqueVector` implements a mutating `findfirst!` method, which returns the index of an element if it exists in the array, or otherwise appends the element and returns its new index:
 
