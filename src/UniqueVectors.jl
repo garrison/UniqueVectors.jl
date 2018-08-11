@@ -2,7 +2,7 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, indexin, findnext, findprev, findall, count
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, indexin, findnext, findprev, findall, count, allunique
 
 EqualTo = Base.Fix2{typeof(isequal)}
 
@@ -93,6 +93,8 @@ end
 
 count(p::EqualTo, uv::AbstractUniqueVector) =
     Int(p.x ∈ uv)
+
+allunique(::AbstractUniqueVector) = true
 
 function push!(uv::UniqueVector{T}, item::T) where {T}
     if item in uv

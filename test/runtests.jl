@@ -7,6 +7,7 @@ using Test
 uv = UniqueVector{String}()
 
 @test isempty(uv)
+@test allunique(uv)
 @test_throws ArgumentError pop!(uv)
 @test findfirst(isequal("cat"), uv) == nothing
 @test findfirst(isequal("cat"), uv) == nothing
@@ -33,6 +34,7 @@ uv = UniqueVector{String}()
 @test size(uv) == (3,)
 @test length(uv) == 3
 @test lastindex(uv) == 3
+@test allunique(uv)
 
 uv2 = UniqueVector([1, 2, 3])
 @test eltype(uv2) == Int
