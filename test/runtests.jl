@@ -35,6 +35,12 @@ uv = UniqueVector{String}()
 @test length(uv) == 3
 @test lastindex(uv) == 3
 @test allunique(uv)
+@test unique!(uv) === uv
+@test unique(uv) == uv
+@test unique(uv) == uv.items
+@test unique(uv) !== uv.items
+empty!(unique(uv))
+@test length(uv.items) == 3
 
 uv2 = UniqueVector([1, 2, 3])
 @test eltype(uv2) == Int
