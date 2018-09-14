@@ -145,6 +145,8 @@ function swap!(uv::UniqueVector, to::Int, from::Int)
         checkbounds(uv,to)
         return uv
     end
+
+    # NOTE: does not provide any exception safety guarantee
     previous_id  = uv[to]
     future_id    = uv[from]
 
