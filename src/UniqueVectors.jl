@@ -159,17 +159,6 @@ function swap!(uv::UniqueVector, to::Int, from::Int)
     return uv
 end
 
-@static if VERSION < v"1.0.0-"
-    Base.@deprecate_binding UniqueVectorError ArgumentError
-
-    @deprecate findfirst(uv::UniqueVector, item) findfirst(isequal(item), uv)
-    @deprecate findfirst!(uv::UniqueVector, item) findfirst!(isequal(item), uv)
-    @deprecate findlast(uv::UniqueVector, item) findlast(isequal(item), uv)
-
-    @deprecate findnext(A::UniqueVector, v, i::Integer) findnext(isequal(v), A, i)
-    @deprecate findprev(A::UniqueVector, v, i::Integer) findprev(isequal(v), A, i)
-end
-
 export AbstractUniqueVector, UniqueVector, findfirst!, swap!
 
 end # module
