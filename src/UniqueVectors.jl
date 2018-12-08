@@ -73,7 +73,7 @@ indexin(a::AbstractArray, b::AbstractUniqueVector) =
 findall(p::Union{Base.Fix2{typeof(in),<:AbstractUniqueVector},
                  Base.Fix2{typeof(!in),<:AbstractUniqueVector}},
         a::Union{Tuple, AbstractArray}) =
-    [i for (i, ai) in enumerate(a) if p(ai)]
+    [i for (i, ai) in (@static if VERSION >= v"1.1.0-DEV.832" pairs else enumerate end)(a) if p(ai)]
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
