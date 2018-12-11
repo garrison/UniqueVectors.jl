@@ -124,13 +124,11 @@ uv5[1] = 4
 @test findlast(isequal(4), uv5) == 1
 @test findall(isequal(4), uv5) == [1]
 
-# Test indexin and findall([!]in)
+# Test indexin and findall(in)
 @test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,nothing,1,6,5,2]
 @test indexin([1,2,34,0,5,56], UniqueVector([34,56,35,1,5,0])) == [4,nothing,1,6,5,2]
 @test findall(in(UniqueVector([34,56,35,1,5,0])), [1,2,34,0,5,56]) == [1,3,4,5,6]
-@test findall(!in(UniqueVector([34,56,35,1,5,0])), [1,2,34,0,5,56]) == [2]
 @test findall(in(UniqueVector([5,7,9])), [5 6; 7 8]) == findall(in([5,7,9]), [5 6; 7 8])
-@test findall(!in(UniqueVector([5,7,9])), [5 6; 7 8]) == findall(!in([5,7,9]), [5 6; 7 8])
 
 # Test findnext and findprev
 @test findnext(isequal(7), UniqueVector([3,5,7,9]), 1) == 3
