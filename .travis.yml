@@ -4,11 +4,8 @@ os:
   - osx
 julia:
   - 1.0
+  - 1.1
   - nightly
 notifications:
   email: false
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia --check-bounds=yes -e 'import Pkg; Pkg.clone(pwd()); Pkg.build("UniqueVectors"); Pkg.test("UniqueVectors"; coverage=true)'
-after_success:
-  - julia -e 'import Pkg; import UniqueVectors; cd(joinpath(dirname(pathof(UniqueVectors)), "..")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+coveralls: true
