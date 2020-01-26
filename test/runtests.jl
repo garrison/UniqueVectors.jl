@@ -142,3 +142,18 @@ uv5[1] = 4
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 2) == nothing
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 3) == 3
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 4) == 3
+
+# Test == vs isequal, differ on floats & missing
+@test findfirst(isequal("horse"), uv4) == findfirst(==("horse"), uv4)
+
+@test_throws Exception UniqueVector([1.0,2.0,NaN,4.0,NaN])
+uv6 = UniqueVector([1.0,2.0,-0.0,4,0.0,6.0,NaN])
+@test findfirst(isequal(0.0), uv6) == 5
+@test findfirst(==(0.0), uv6) == 3
+@test findfirst(isequal(NaN), uv6) == 7
+@test findfirst(==(NaN), uv6) === nothing
+
+@test_throws Exception UniqueVector([1,2,missing,4,missing])
+uv7 = UniqueVector([1,2,missing,4])
+@test findfirst(isequal(missing), uv7) == 3
+@test_throws Exception findfirst(==(missing), uv7)

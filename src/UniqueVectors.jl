@@ -4,7 +4,7 @@ include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, indexin, findnext, findprev, findall, count, allunique, unique, unique!
 
-EqualTo = Base.Fix2{typeof(isequal)}
+EqualTo{T} = Union{Base.Fix2{typeof(isequal),T}, Base.Fix2{typeof(==),T}}
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
 
@@ -47,6 +47,11 @@ in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
 findfirst(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T} =
     get(uv.lookup, p.x, nothing)
+
+findfirst(p::Base.Fix2{typeof(==),<:T}, uv::UniqueVector{T}) where {T<:AbstractFloat} =
+    findfirst(p, uv.items)
+findfirst(p::Base.Fix2{typeof(==),Missing}, uv::UniqueVector) =
+    throw(TypeError(:findfirst, "", Bool, missing))
 
 function findfirst!(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T}
     rv = get!(uv.lookup, p.x) do
