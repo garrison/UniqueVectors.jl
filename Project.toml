@@ -1,6 +1,6 @@
 name = "UniqueVectors"
 uuid = "2fbcfb34-fd0c-5fbb-b5d7-e826d8f5b0a9"
-version = "0.8.1"
+version = "0.9"
 
 [deps]
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
