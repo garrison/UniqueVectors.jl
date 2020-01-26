@@ -5,8 +5,7 @@ os:
   - windows
 julia:
   - 1.0
-  - 1.1
-  - 1.2
+  - release
   - nightly
 notifications:
   email: false
