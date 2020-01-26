@@ -2,7 +2,7 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, indexin, findnext, findprev, findall, count, allunique, unique, unique!
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!
 
 EqualTo = Base.Fix2{typeof(isequal)}
 
@@ -60,6 +60,11 @@ end
 
 findfirst(p::EqualTo, uv::UniqueVector{T}) where {T} =
     findfirst(isequal(convert(T, p.x)), uv)
+
+function findfirst(p::EqualTo, uv::SubArray{<:Any,1,<:AbstractUniqueVector})
+    ip = findfirst(p, uv.parent)
+    ip === nothing ? nothing : findfirst(isequal(ip), first(uv.indices))
+end
 
 findfirst!(p::EqualTo, uv::UniqueVector{T}) where {T} =
     findfirst!(isequal(convert(T, p.x)), uv)

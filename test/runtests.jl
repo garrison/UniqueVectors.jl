@@ -1,5 +1,6 @@
 using UniqueVectors
 using Test
+using InteractiveUtils: @which
 
 @test length(UniqueVector([1,5,6,3])) == 4
 @test_throws ArgumentError UniqueVector([1,3,5,6,3])
@@ -113,6 +114,11 @@ uv4[1] = "cat"
 push!(uv4, "mouse")
 @test uv4[:] == ["cat", "horse", "dog", "mouse"]
 @test uv4[1:2] == ["cat", "horse"]
+
+# Test view
+@test view(uv4, 2:3) isa SubArray
+@test findfirst(isequal("dog"), view(uv4, 2:3)) == 2
+@test @which(findfirst(isequal("dog"), view(uv4, 2:3))).module == UniqueVectors
 
 uv5 = UniqueVector{Float64}()
 push!(uv5, 3)
