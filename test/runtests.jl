@@ -114,7 +114,6 @@ uv4[1] = "cat"
 push!(uv4, "mouse")
 @test uv4[:] == ["cat", "horse", "dog", "mouse"]
 @test uv4[1:2] == ["cat", "horse"]
-@test uv4[1:2] isa UniqueVector
 
 # Test view
 @test view(uv4, 2:3) isa SubArray

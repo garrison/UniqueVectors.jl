@@ -145,10 +145,6 @@ end
 setindex!(uv::UniqueVector{T}, item, idx::Integer) where {T} =
     setindex!(uv, convert(T, item), idx)
 
-getindex(uv::UniqueVector, idx::AbstractVector) =
-    UniqueVector(uv.items[idx])
-
-
 "`swap!(uv::UniqueVector, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `UniqueVector`"
 function swap!(uv::UniqueVector, to::Int, from::Int)
     if to == from
