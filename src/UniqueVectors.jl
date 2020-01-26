@@ -48,8 +48,10 @@ in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 findfirst(p::EqualTo{<:T}, uv::UniqueVector{T}) where {T} =
     get(uv.lookup, p.x, nothing)
 
-findfirst(p::Base.Fix2{typeof(==),<:T}, uv::UniqueVector{T}) where {T<:AbstractFloat} =
-    findfirst(p, uv.items)
+findfirst(p::Base.Fix2{typeof(==)}, uv::UniqueVector{<:AbstractFloat}) =
+    iszero(p.x) ? findfirst(p, uv.items) :
+    isnan(p.x) ? nothing :
+    get(uv.lookup, p.x, nothing)
 findfirst(p::Base.Fix2{typeof(==),Missing}, uv::UniqueVector) =
     throw(TypeError(:findfirst, "", Bool, missing))
 
