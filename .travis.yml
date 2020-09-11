@@ -6,7 +6,6 @@ os:
 julia:
   - 1.0
   - release
-  - nightly
 notifications:
   email: false
 coveralls: true
