@@ -43,4 +43,6 @@ In addition, `UniqueVector` implements a mutating `findfirst!` method, which ret
 
 (More generally, one might want an abstract type that represents any bidirectional mapping between two different sets (without one of them necessarily being contiguous integers from `1` to `N`).  In this case, using `findfirst` may not be the appropriate interface, and I'd welcome any comments on this.)
 
-Note: This package was formerly known as `IndexedArrays` (see issue #4).
+Note: This package was formerly known as `IndexedArrays` (see issue [#4]).
+
+[#4]: https://github.com/garrison/UniqueVectors.jl/issues/4
