@@ -47,7 +47,7 @@ uv2 = UniqueVector([1, 2, 3])
 @test eltype(uv2) == Int
 @test findfirst(isequal(0x02), uv2) == 2
 @test findfirst!(isequal(0x02), uv2) == 2
-@test uv2 == UniqueVector(i for i in 1:3)
+@test uv2 == UniqueVector(collect(i for i in 1:3))
 for elt in [3,2,1]
     @test pop!(uv2) == elt
 end
@@ -148,3 +148,9 @@ uv5[1] = 4
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 2) == nothing
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 3) == 3
 @test findprev(isequal(7), UniqueVector([3,5,7,9]), 4) == 3
+
+# Test constructor behavior (#7)
+let items = [1,2,3]
+    @test UniqueVector(items).items !== items
+    @test UniqueVector{Int}(items).items !== items
+end
