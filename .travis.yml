@@ -5,7 +5,7 @@ os:
   - windows
 julia:
   - 1.0
-  - release
+  - 1
 notifications:
   email: false
 coveralls: true
