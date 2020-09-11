@@ -13,8 +13,9 @@ struct UniqueVector{T} <: AbstractUniqueVector{T}
     lookup::Dict{T,Int}
 
     UniqueVector{T}() where {T} = new(T[], Dict{T,Int}())
-    function UniqueVector{T}(items::Vector{T}) where {T}
-        uv = new(items, Dict{T,Int}())
+
+    function UniqueVector{T}(items) where {T}
+        uv = new(Vector{T}(items), Dict{T,Int}())
         sizehint!(uv.lookup, length(uv.items))
         for (i, item) in enumerate(uv.items)
             if item in uv
@@ -27,11 +28,11 @@ struct UniqueVector{T} <: AbstractUniqueVector{T}
     end
 end
 
-UniqueVector(items::Vector{T}) where {T} = UniqueVector{T}(items)
-UniqueVector(items::AbstractVector{T}) where {T} = UniqueVector{T}(Vector{T}(items))
-UniqueVector(items) = UniqueVector(collect(items))
+UniqueVector(items::AbstractVector{T}) where {T} = UniqueVector{T}(items)
 
-copy(uv::UniqueVector) = UniqueVector(copy(uv.items))
+@deprecate UniqueVector(items) UniqueVector(collect(items))
+
+copy(uv::UniqueVector) = UniqueVector(uv.items)
 
 @delegate UniqueVector.items [ length, size, isempty, getindex, iterate ]
 
