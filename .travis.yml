@@ -6,6 +6,13 @@ os:
 julia:
   - 1.0
   - 1
+arch:
+  - x86
+  - x64
+matrix:
+  exclude:
+    - os: osx
+      arch: x86
 notifications:
   email: false
 coveralls: true
