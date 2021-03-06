@@ -132,7 +132,7 @@ function pop!(uv::UniqueVector)
 end
 
 function setindex!(uv::UniqueVector{T}, item::T, idx::Integer) where {T}
-    checkbounds(uv, idx)
+    @boundscheck checkbounds(uv, idx)
     uv[idx] == item && return uv # nothing to do
     item ∉ uv || throw(ArgumentError("cannot set an element that exists elsewhere in UniqueVector"))
     # NOTE: does not provide any exception safety guarantee
@@ -149,7 +149,7 @@ setindex!(uv::UniqueVector{T}, item, idx::Integer) where {T} =
 "`swap!(uv::UniqueVector, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `UniqueVector`"
 function swap!(uv::UniqueVector, to::Int, from::Int)
     if to == from
-        checkbounds(uv,to)
+        @boundscheck checkbounds(uv,to)
         return uv
     end
 
