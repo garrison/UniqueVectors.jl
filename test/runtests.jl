@@ -74,6 +74,7 @@ uv2 = copy(uv)
 @test uv2[:] == ["cat", "dog", "mouse"]
 @test findfirst(isequal("cat"), uv2) == 1
 
+# Test swap!
 let uv = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(uv)
 
     uv = swap!(uv, 2, 2)
@@ -88,6 +89,21 @@ let uv = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(uv)
 
     @test findfirst(isequal("dog"), uv) == 3
     @test findfirst(isequal("dog"), original) == 2
+end
+
+# Test permute! & inverse
+let uv = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(uv)
+    perm = sortperm(rand(4))
+    permute!(uv, perm)
+    @test uv == original[perm]
+    @test uv[findfirst(isequal("dog"), uv)] == "dog"
+
+    invpermute!(uv, perm)
+    @test uv == original
+
+    invpermute!(uv, perm)
+    @test uv == original[invperm(perm)]
+    @test uv[findfirst(isequal("dog"), uv)] == "dog"
 end
 
 @test UniqueVector([1,2,3,4]) == UniqueVector(1:4)
