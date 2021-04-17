@@ -2,7 +2,7 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!, permute!, invpermute!
 
 EqualTo = Base.Fix2{typeof(isequal)}
 
@@ -163,6 +163,19 @@ function swap!(uv::UniqueVector, to::Int, from::Int)
     uv.lookup[previous_id] = from
     uv.lookup[future_id]   = to
 
+    return uv
+end
+
+function permute!(uv::UniqueVector, perm::AbstractVector)
+    ip = invperm(perm)
+    map!(i -> get(ip, i, 0), uv.lookup.vals, uv.lookup.vals)
+    permute!(uv.items, perm)
+    return uv
+end
+
+function invpermute!(uv::UniqueVector, perm::AbstractVector)
+    map!(i -> get(perm, i, 0), uv.lookup.vals, uv.lookup.vals)
+    invpermute!(uv.items, perm)
     return uv
 end
 
