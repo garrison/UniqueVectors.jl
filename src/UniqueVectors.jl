@@ -78,15 +78,15 @@ indexin(a::AbstractArray, b::AbstractUniqueVector) =
 
 function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
                  a::AbstractArray)
-    # The version in Base creates a Set that is unnecessary in our case.  So
-    # the override it here.
+    # The version in Base creates a Set that is unnecessary in our case, hence
+    # the override here.
     [i for (i, ai) in (@static if VERSION >= v"1.1.0-DEV.832" pairs else enumerate end)(a) if p(ai)]
 end
 
 function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
                  a::Tuple)
-    # The version in Base creates a Set that is unnecessary in our case.  So
-    # the override it here.
+    # The version in Base creates a Set that is unnecessary in our case, hence
+    # the override here.
     [i for (i, ai) in (@static if VERSION >= v"1.1.0-DEV.832" pairs else enumerate end)(a) if p(ai)]
 end
 
