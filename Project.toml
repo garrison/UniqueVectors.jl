@@ -1,8 +1,6 @@
 name = "UniqueVectors"
 uuid = "2fbcfb34-fd0c-5fbb-b5d7-e826d8f5b0a9"
-version = "1.0.0"
-
-[deps]
+version = "1.0.1"
 
 [compat]
 julia = "1"
