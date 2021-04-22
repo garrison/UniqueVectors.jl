@@ -167,11 +167,14 @@ function swap!(uv::UniqueVector, to::Int, from::Int)
 end
 
 function permute!(uv::UniqueVector, perm::AbstractVector)
-    map!(uv.lookup.vals, uv.lookup.vals) do i
-        k = findfirst(isequal(i), perm)
-        something(k, 0)
+    # This allocates, but usually permute!(a, p) = permute!!(a, copymutable(p)) would anyway
+    ip = invperm(perm)
+    map!(i -> get(ip, i, 0), uv.lookup.vals, uv.lookup.vals)
+    if ismutable(ip)
+        Base.invpermute!!(uv.items, ip)  # save the allocation, so long as ip isn't an SVector or something
+    else
+        permute!(uv.items, perm)
     end
-    permute!(uv.items, perm)
     return uv
 end
 
