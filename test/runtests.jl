@@ -91,7 +91,7 @@ let uv = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(uv)
     @test findfirst(isequal("dog"), original) == 2
 end
 
-# Test permute! & inverse
+# Test permute! and invpermute!
 let uv = UniqueVector(["cat", "dog", "mouse", "human"]), original = copy(uv)
     perm = sortperm(rand(4))
     permute!(uv, perm)

@@ -168,13 +168,13 @@ end
 
 function permute!(uv::UniqueVector, perm::AbstractVector)
     ip = invperm(perm)
-    map!(i -> get(ip, i, 0), uv.lookup.vals, uv.lookup.vals)
+    map!(i -> ip[i], values(uv.lookup))
     permute!(uv.items, perm)
     return uv
 end
 
 function invpermute!(uv::UniqueVector, perm::AbstractVector)
-    map!(i -> get(perm, i, 0), uv.lookup.vals, uv.lookup.vals)
+    map!(i -> perm[i], values(uv.lookup))
     invpermute!(uv.items, perm)
     return uv
 end
