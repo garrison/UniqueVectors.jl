@@ -1,8 +1,7 @@
 # UniqueVectors
 
 [![version](https://juliahub.com/docs/UniqueVectors/version.svg)](https://juliahub.com/ui/Packages/UniqueVectors/iZpAV)
-[![Build Status](https://travis-ci.org/garrison/UniqueVectors.jl.svg?branch=master)](https://travis-ci.org/garrison/UniqueVectors.jl)
-[![Coverage Status](https://coveralls.io/repos/garrison/UniqueVectors.jl/badge.svg?branch=master)](https://coveralls.io/r/garrison/UniqueVectors.jl?branch=master)
+[![Build Status](https://github.com/garrison/UniqueVectors.jl/actions/workflows/test.yml/badge.svg)](https://github.com/garrison/UniqueVectors.jl/actions)
 [![pkgeval](https://juliahub.com/docs/UniqueVectors/pkgeval.svg)](https://juliahub.com/ui/Packages/UniqueVectors/iZpAV)
 
     julia> import Pkg; Pkg.add("UniqueVectors")
