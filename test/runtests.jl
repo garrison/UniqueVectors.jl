@@ -1,6 +1,9 @@
 using UniqueVectors
 using Test
+using Aqua
 using InteractiveUtils: @which
+
+Aqua.test_all(UniqueVectors)
 
 @test length(UniqueVector([1,5,6,3])) == 4
 @test_throws ArgumentError UniqueVector([1,3,5,6,3])
