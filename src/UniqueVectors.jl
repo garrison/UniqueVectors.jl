@@ -2,7 +2,7 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!, permute!, invpermute!
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!, permute!, invpermute!, sizehint!
 
 EqualTo = Base.Fix2{typeof(isequal)}
 
@@ -40,6 +40,12 @@ function empty!(uv::UniqueVector)
     # NOTE: does not provide any exception safety guarantee
     empty!(uv.items)
     empty!(uv.lookup)
+    return uv
+end
+
+function sizehint!(uv::UniqueVector, sz::Integer)::UniqueVector
+    sizehint!(uv.items, sz)
+    sizehint!(uv.lookup, sz)
     return uv
 end
 

@@ -58,6 +58,7 @@ uv2 = copy(uv)
 
 @test empty!(uv) === uv
 @test isempty(uv)
+@test sizehint!(uv, 2) === uv
 @test findfirst(isequal("cat"), uv) == nothing
 @test findfirst(isequal("cat"), uv) == nothing
 @test findfirst!(isequal("horse"), uv) == 1
