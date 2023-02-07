@@ -4,6 +4,10 @@ include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!, permute!, invpermute!, sizehint!
 
+# The following is to deal with some method ambiguities that Aqua.jl found;
+# see https://github.com/garrison/UniqueVectors.jl/issues/18
+import SparseArrays: AbstractSparseMatrixCSC, SparseVector
+
 EqualTo = Base.Fix2{typeof(isequal)}
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
@@ -94,6 +98,16 @@ function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
     # The version in Base creates a Set that is unnecessary in our case, hence
     # the override here.
     [i for (i, ai) in pairs(a) if p(ai)]
+end
+
+function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
+                 a::AbstractSparseMatrixCSC)
+    invoke(findall, Tuple{Function, AbstractSparseMatrixCSC}, p, a)
+end
+
+function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
+                 a::SparseVector{<:Any,<:Any})
+    invoke(findall, Tuple{Function, SparseVector}, p, a)
 end
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)

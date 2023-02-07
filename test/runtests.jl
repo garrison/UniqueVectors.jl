@@ -1,5 +1,6 @@
 using UniqueVectors
 using Test
+using SparseArrays
 using InteractiveUtils: @which
 
 @test length(UniqueVector([1,5,6,3])) == 4
@@ -171,4 +172,18 @@ uv5[1] = 4
 let items = [1,2,3]
     @test UniqueVector(items).items !== items
     @test UniqueVector{Int}(items).items !== items
+end
+
+# Test compatibility with SparseArrays
+let arr = [1, 3, 5]
+    uv = UniqueVector(arr)
+    I = [1, 4, 3, 5]
+    J = [4, 7, 18, 9]
+    V = [1, 2, -5, 3]
+    let S = sparse(I, J, V)
+        @test findall(in(uv), S) == findall(in(arr), S)
+    end
+    let R = sparsevec(I, V)
+        @test findall(in(uv), R) == findall(in(arr), R)
+    end
 end
