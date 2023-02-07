@@ -1,7 +1,12 @@
 using UniqueVectors
 using Test
 using SparseArrays
+using Aqua
 using InteractiveUtils: @which
+
+@testset "Aqua" begin
+    Aqua.test_all(UniqueVectors)
+end
 
 @test length(UniqueVector([1,5,6,3])) == 4
 @test_throws ArgumentError UniqueVector([1,3,5,6,3])

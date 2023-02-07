@@ -2,6 +2,7 @@
 
 [![version](https://juliahub.com/docs/UniqueVectors/version.svg)](https://juliahub.com/ui/Packages/UniqueVectors/iZpAV)
 [![Build Status](https://github.com/garrison/UniqueVectors.jl/actions/workflows/test.yml/badge.svg)](https://github.com/garrison/UniqueVectors.jl/actions)
+[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![Coverage Status](https://codecov.io/github/garrison/UniqueVectors.jl/branch/master/graph/badge.svg?token=sBEvVWtrjv)](https://codecov.io/github/garrison/UniqueVectors.jl)
 [![pkgeval](https://juliahub.com/docs/UniqueVectors/pkgeval.svg)](https://juliahub.com/ui/Packages/UniqueVectors/iZpAV)
 
