@@ -2,7 +2,11 @@ module UniqueVectors
 
 include("delegate.jl")
 
-import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!, permute!, invpermute!
+import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!, permute!, invpermute!, sizehint!
+
+# The following is to deal with some method ambiguities that Aqua.jl found;
+# see https://github.com/garrison/UniqueVectors.jl/issues/18
+import SparseArrays: AbstractSparseMatrixCSC, SparseVector
 
 EqualTo = Base.Fix2{typeof(isequal)}
 
@@ -43,6 +47,12 @@ function empty!(uv::UniqueVector)
     return uv
 end
 
+function sizehint!(uv::UniqueVector, sz::Integer)::UniqueVector
+    sizehint!(uv.items, sz)
+    sizehint!(uv.lookup, sz)
+    return uv
+end
+
 in(item::T, uv::UniqueVector{T}) where {T} = haskey(uv.lookup, item)
 in(item, uv::UniqueVector{T}) where {T} = in(convert(T, item), uv)
 
@@ -80,15 +90,24 @@ function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
                  a::AbstractArray)
     # The version in Base creates a Set that is unnecessary in our case, hence
     # the override here.
-    [i for (i, ai) in (@static if VERSION >= v"1.1.0-DEV.832" pairs else enumerate end)(a) if p(ai)]
+    [i for (i, ai) in pairs(a) if p(ai)]
 end
 
 function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
                  a::Tuple)
     # The version in Base creates a Set that is unnecessary in our case, hence
     # the override here.
-    [i for (i, ai) in (@static if VERSION >= v"1.1.0-DEV.832" pairs else enumerate end)(a) if p(ai)]
+    [i for (i, ai) in pairs(a) if p(ai)]
 end
+
+# The following are to deal with some method ambiguities that Aqua.jl found;
+# see https://github.com/garrison/UniqueVectors.jl/issues/18
+findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
+        a::AbstractSparseMatrixCSC) =
+    invoke(findall, Tuple{Function, AbstractSparseMatrixCSC}, p, a)
+findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
+        a::SparseVector{<:Any,<:Any}) =
+    invoke(findall, Tuple{Function, SparseVector}, p, a)
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
