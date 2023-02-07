@@ -100,15 +100,14 @@ function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
     [i for (i, ai) in pairs(a) if p(ai)]
 end
 
-function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
-                 a::AbstractSparseMatrixCSC)
+# The following are to deal with some method ambiguities that Aqua.jl found;
+# see https://github.com/garrison/UniqueVectors.jl/issues/18
+findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
+        a::AbstractSparseMatrixCSC) =
     invoke(findall, Tuple{Function, AbstractSparseMatrixCSC}, p, a)
-end
-
-function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
-                 a::SparseVector{<:Any,<:Any})
+findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
+        a::SparseVector{<:Any,<:Any}) =
     invoke(findall, Tuple{Function, SparseVector}, p, a)
-end
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
