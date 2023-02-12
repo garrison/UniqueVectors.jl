@@ -4,10 +4,6 @@ include("delegate.jl")
 
 import Base: copy, in, getindex, findfirst, findlast, length, size, isempty, iterate, empty!, push!, pop!, setindex!, getindex, indexin, findnext, findprev, findall, count, allunique, unique, unique!, permute!, invpermute!, sizehint!
 
-# The following is to deal with some method ambiguities that Aqua.jl found;
-# see https://github.com/garrison/UniqueVectors.jl/issues/18
-import SparseArrays: AbstractSparseMatrixCSC, SparseVector
-
 EqualTo = Base.Fix2{typeof(isequal)}
 
 abstract type AbstractUniqueVector{T} <: AbstractVector{T} end
@@ -86,28 +82,24 @@ findlast(p::EqualTo, uv::AbstractUniqueVector) =
 indexin(a::AbstractArray, b::AbstractUniqueVector) =
     [findlast(isequal(elt), b) for elt in a]
 
-function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
-                 a::AbstractArray)
-    # The version in Base creates a Set that is unnecessary in our case, hence
-    # the override here.
-    [i for (i, ai) in pairs(a) if p(ai)]
+# My apologies for that inevitable moment in the future when the following
+# method definition causes a PkgEval failure.  The goal here is to speed up
+# `findall(::p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
+# ::Union{AbstractArray, Tuple}` without causing further method ambiguities.
+# The relevant `findall` method in Base calls `_findin`, but `_findin` creates
+# a Set that is conceptually unnecessary for a UniqueArray.  Previous versions
+# of this code overrode `findall` itself here, but it was impossible to do so
+# in a general way that did not cause method ambiguities with other specialized
+# `findall` implementations, such as for the various sparse array types.  These
+# types have proliferated over time as Julia is further developed, so the below
+# method seemed to be the cleanest solution.
+function Base._findin(a::Union{AbstractArray, Tuple}, b::AbstractUniqueVector)
+    ind = Vector{eltype(keys(a))}()
+    @inbounds for (i,ai) in pairs(a)
+        ai in b && push!(ind, i)
+    end
+    ind
 end
-
-function findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
-                 a::Tuple)
-    # The version in Base creates a Set that is unnecessary in our case, hence
-    # the override here.
-    [i for (i, ai) in pairs(a) if p(ai)]
-end
-
-# The following are to deal with some method ambiguities that Aqua.jl found;
-# see https://github.com/garrison/UniqueVectors.jl/issues/18
-findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
-        a::AbstractSparseMatrixCSC) =
-    invoke(findall, Tuple{Function, AbstractSparseMatrixCSC}, p, a)
-findall(p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
-        a::SparseVector{<:Any,<:Any}) =
-    invoke(findall, Tuple{Function, SparseVector}, p, a)
 
 function findnext(p::EqualTo, A::AbstractUniqueVector, i::Integer)
     idx = findfirst(p, A)
