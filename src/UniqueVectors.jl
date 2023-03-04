@@ -87,7 +87,7 @@ indexin(a::AbstractArray, b::AbstractUniqueVector) =
 # `findall(::p::Base.Fix2{typeof(in),<:AbstractUniqueVector},
 # ::Union{AbstractArray, Tuple}` without causing further method ambiguities.
 # The relevant `findall` method in Base calls `_findin`, but `_findin` creates
-# a Set that is conceptually unnecessary for a UniqueArray.  Previous versions
+# a Set that is conceptually unnecessary for a UniqueVector.  Previous versions
 # of this code overrode `findall` itself here, but it was impossible to do so
 # in a general way that did not cause method ambiguities with other specialized
 # `findall` implementations, such as for the various sparse array types.  These
